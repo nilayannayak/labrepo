@@ -1,0 +1,3001 @@
+
+
+DOCKERS
+*
+*#hostname
+#ip a
+# cat /etc/resolv.conf
+	* #cat /etc/hosts
+10.0.15.X        node3.example.com    node3
+
+  #yum list docker
+  #yum install docker*
+
+  Verify:
+      #docker <enter>
+      
+      #docker images
+      #docker search ub
+      #docker pull registry.access.redhat.com/ubi7
+      #docker run --name myos registry.access.redhat.com/ubi7 
+      ==============
+      #docker search httpd
+      #docker run --name myweb registry.access.redhat.com/ubi9/httpd-24
+      This will run in fore-ground
+      Terminate the same and apply below command
+      
+      #docker run -d --name myweb2 registry.access.redhat.com/ubi/httpd-24
+      Now it should run in backgro
+      
+      #docker inspect myweb2
+      #docker exec myweb2 cat /etc/resolv.conf
+      #docker exec -it myweb2 /bin/bash 
+      
+      [root@node3 ~]# docker exec -it myweb2 /bin/bash
+Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+bash-5.1$ cd /var/www/html
+bash-5.1$ cat > index.html
+Welcome to DevOps!!!
+bash-5.1$ curl localhost:8080
+Welcome to DevOps!!!
+bash-5.1$ 
+
+      ===============
+*      31Jan2025:
+      
+      
+[root@node3 ~]# docker start myweb2 
+Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+myweb2
+[root@node3 ~]# docker ps 
+Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+CONTAINER ID  IMAGE                                            COMMAND               CREATED       STATUS        PORTS       NAMES
+533e4a0c937c  registry.access.redhat.com/ubi9/httpd-24:latest  /usr/bin/run-http...  21 hours ago  Up 4 seconds              myweb2
+[root@node3 ~]# docker stop myweb2
+Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+myweb2
+[root@node3 ~]# docker ps 
+Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+CONTAINER ID  IMAGE       COMMAND     CREATED     STATUS      PORTS       NAMES
+[root@node3 ~]# docker ps -a 
+Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+CONTAINER ID  IMAGE                                            COMMAND               CREATED       STATUS                    PORTS       NAMES
+70d66fc22269  registry.access.redhat.com/ubi7:latest           /bin/bash             22 hours ago  Exited (0) 22 hours ago               myos
+31db272773f3  registry.access.redhat.com/ubi7:latest           sleep 40              22 hours ago  Exited (0) 22 hours ago               myos2
+9550344cd162  registry.access.redhat.com/ubi9/httpd-24:latest  /usr/bin/run-http...  21 hours ago  Exited (0) 21 hours ago               myweb
+533e4a0c937c  registry.access.redhat.com/ubi9/httpd-24:latest  /usr/bin/run-http...  21 hours ago  Exited (0) 6 seconds ago              myweb2
+[root@node3 ~]# docker rm myweb2
+Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+myweb2
+[root@node3 ~]# 
+
+
+*PortMapping:
+
+[root@node3 ~]# docker ps 
+[root@node3 ~]# docker run -d --name myweb3 -p 8090:8080 registry.access.redhat.com/ubi9/httpd-24
+
+Task:1
+[root@node3 ~]# docker ps 
+Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+CONTAINER ID  IMAGE                                            COMMAND               CREATED         STATUS         PORTS                   NAMES
+dfb353e99bf6  registry.access.redhat.com/ubi9/httpd-24:latest  /usr/bin/run-http...  13 minutes ago  Up 13 minutes                          myweb2
+a37b0a355123  registry.access.redhat.com/ubi9/httpd-24:latest  /usr/bin/run-http...  5 minutes ago   Up 5 minutes   0.0.0.0:8090->8080/tcp  myweb3      
+ [root@node3 ~]# docker exec -it myweb3 bash
+Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+bash-5.1$ cd /var/www/html
+bash-5.1$ cat > index.html
+Welcome to my FirstPage!!!
+bash-5.1$ 
+bash-5.1$ 
+bash-5.1$ curl localhost:8080
+Welcome to my FirstPage!!!
+bash-5.1$ exit
+exit
+[root@node3 ~]# docker ps
+Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+CONTAINER ID  IMAGE                                            COMMAND               CREATED         STATUS         PORTS                   NAMES
+dfb353e99bf6  registry.access.redhat.com/ubi9/httpd-24:latest  /usr/bin/run-http...  15 minutes ago  Up 15 minutes                          myweb2
+a37b0a355123  registry.access.redhat.com/ubi9/httpd-24:latest  /usr/bin/run-http...  7 minutes ago   Up 7 minutes   0.0.0.0:8090->8080/tcp  myweb3
+[root@node3 ~]# curl localhost:8090
+Welcome to my FirstPage!!!
+[root@node3 ~]#       
+      
+      Task Completed:  
+          Neerav Saxena,  Ratnadeep Singh, Ajay Talla ,Nilayan, Vishnu,Sanchita ,Thamizharasu, Shivaprasad,Santosh,  vidhyadhar , Ipsita  ,Sarthak Atanu,Pankaj,Rajesh, Omkar, Yogesh, Shridhar , Biswaranjan,ChandraDebasish,Sayali
+          
+      
+      Task:2
+Persistent Storage:     
+[root@node3 ~]# mkdir -p webcontent/html
+[root@node3 ~]# cd webcontent/html
+[root@node3 html]# cat >index.html
+Welcome to Host Msgs!!!
+[root@node3 html]# 
+[root@node3 html]# docker run -d --name myweb4 -p 8091:8080 -v /root/webcontent:/var/www:Z registry.access.redhat.com/ubi9/httpd-24:latest 
+Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+b9b910a50a5d8ee32fe78d2446d24999584071ebbf182066999a30e0075f91d6
+[root@node3 html]# docker ps 
+Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+CONTAINER ID  IMAGE                                            COMMAND               CREATED         STATUS         PORTS                   NAMES
+dfb353e99bf6  registry.access.redhat.com/ubi9/httpd-24:latest  /usr/bin/run-http...  54 minutes ago  Up 54 minutes                          myweb2
+a37b0a355123  registry.access.redhat.com/ubi9/httpd-24:latest  /usr/bin/run-http...  46 minutes ago  Up 46 minutes  0.0.0.0:8090->8080/tcp  myweb3
+b9b910a50a5d  registry.access.redhat.com/ubi9/httpd-24:latest  /usr/bin/run-http...  5 seconds ago   Up 5 seconds   0.0.0.0:8091->8080/tcp  myweb4
+[root@node3 html]# 
+      
+[root@node3 html]# docker exec -it myweb4 bash
+Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+bash-5.1$ cd /var/www/html
+bash-5.1$ ls
+index.html
+bash-5.1$ cat index.html 
+Welcome to Host Msgs!!!
+bash-5.1$ curl localhost:8080
+Welcome to Host Msgs!!!
+bash-5.1$ exit
+exit
+[root@node3 html]# curl localhost:8091
+Welcome to Host Msgs!!!
+[root@node3 html]# 
+[root@node3 html]# docker ps
+Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+CONTAINER ID  IMAGE                                            COMMAND               CREATED             STATUS             PORTS                   NAMES
+dfb353e99bf6  registry.access.redhat.com/ubi9/httpd-24:latest  /usr/bin/run-http...  56 minutes ago      Up 56 minutes                              myweb2
+a37b0a355123  registry.access.redhat.com/ubi9/httpd-24:latest  /usr/bin/run-http...  48 minutes ago      Up 48 minutes      0.0.0.0:8090->8080/tcp  myweb3
+b9b910a50a5d  registry.access.redhat.com/ubi9/httpd-24:latest  /usr/bin/run-http...  About a minute ago  Up About a minute  0.0.0.0:8091->8080/tcp  myweb4
+[root@node3 html]# docker stop myweb4
+Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+myweb4
+[root@node3 html]# docker rm myweb4 
+Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+myweb4
+[root@node3 html]# 
+[root@node3 html]# 
+[root@node3 html]# docker run -d --name myweb4 -p 8091:8080 -v /root/webcontent:/var/www:Z registry.access.redhat.com/ubi9/httpd-24:latest 
+Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+40dae19b44ff94569de039be1c0c335578849089b69088a9a695855416ab9d01
+[root@node3 html]# curl localhost:8091
+Welcome to Host Msgs!!!
+[root@node3 html]# docker exec -it myweb4 bash
+Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+bash-5.1$ cd /var/www/html
+bash-5.1$ ls
+index.html
+bash-5.1$ cat index.html 
+Welcome to Host Msgs!!!
+bash-5.1$ exit
+exit
+[root@node3 html]# cat >>index.html 
+This is appended message from host!
+[root@node3 html]# 
+[root@node3 html]# curl localhost:8091
+Welcome to Host Msgs!!!
+This is appended message from host!
+[root@node3 html]# 
+ 
+This is 3rd mssg from host!
+[root@node3 html]# 
+[root@node3 html]# 
+[root@node3 html]# curl localhost:8091
+Welcome to Host Msgs!!!
+This is appended message from host!
+This is 3rd mssg from host!
+[root@node3 html]# docker ps
+Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+CONTAINER ID  IMAGE                                            COMMAND               CREATED             STATUS             PORTS                   NAMES
+dfb353e99bf6  registry.access.redhat.com/ubi9/httpd-24:latest  /usr/bin/run-http...  58 minutes ago      Up 58 minutes                              myweb2
+a37b0a355123  registry.access.redhat.com/ubi9/httpd-24:latest  /usr/bin/run-http...  50 minutes ago      Up 50 minutes      0.0.0.0:8090->8080/tcp  myweb3
+40dae19b44ff  registry.access.redhat.com/ubi9/httpd-24:latest  /usr/bin/run-http...  About a minute ago  Up About a minute  0.0.0.0:8091->8080/tcp  myweb4
+[root@node3 html]# docker stop myweb4
+Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+myweb4
+[root@node3 html]# docker rm myweb4
+Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+myweb4
+[root@node3 html]# docker run -d --name myweb4 -p 8091:8080 -v /root/webcontent:/var/www:Z registry.access.redhat.com/ubi9/httpd-24:latest 
+Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+161f5bbb793235d0040ef5d70ef9fcc051a39346da26e89cad2a42912eb2c151
+[root@node3 html]#
+
+Task:2 Completed: Santosh Ratnadeep,Sarthak, Neerav Saxena,Ajay Talla,ThamizhShivaprasad,Chandra, Navin,Shridhar,NilayanKumar,Omkar,vidhyadhar,Rajesh,Ipsita,BiswaranjanPankajsenthilGDebasish,Sayali
+
+
+*Task:3
+*Stateful App (mariadb):
+    
+[root@node3 ~]# docker search mariadb
+Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+NAME                                                          DESCRIPTION
+registry.access.redhat.com/rhscl/mariadb-101-rhel7            MariaDB server 10.1 for OpenShift and genera...
+registry.access.redhat.com/openshift3/mariadb-apb             Ansible Playbook Bundle application definiti...
+registry.access.redhat.com/rhscl/mariadb-100-rhel7            MariaDB 10.0 SQL database server
+registry.access.redhat.com/rhscl/mariadb-102-rhel7            MariaDB is a multi-user, multi-threaded SQL...
+
+[root@node3 ~]# docker run -d --name mydb -p 3306:3306 registry.access.redhat.com/rhscl/mariadb-101-rhel7
+
+Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+Trying to pull registry.access.redhat.com/rhscl/mariadb-101-rhel7:latest...
+Getting image source signatures
+Checking if image destination supports signatures
+
+Copying blob 3e4c147a12c5 done   | 
+Copying blob 3e4c147a12c5 done   | 
+Copying blob 18f0f6de4601 done   | 
+Copying blob db1d55616933 done   | 
+Copying blob d09f4fbfc5a9 done   | 
+Copying config 96669f514d done   | 
+Writing manifest to image destination
+Storing signatures
+
+5e4081f8b69245138e34c8fa77512ae696e98e09b6ab558233c78956c6fb2d7a
+[root@node3 ~]# 
+[root@node3 ~]# 
+[root@node3 ~]# 
+[root@node3 ~]# docker ps
+Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+CONTAINER ID  IMAGE                                            COMMAND               CREATED            STATUS            PORTS                   NAMES
+dfb353e99bf6  registry.access.redhat.com/ubi9/httpd-24:latest  /usr/bin/run-http...  2 hours ago        Up 2 hours                                myweb2
+a37b0a355123  registry.access.redhat.com/ubi9/httpd-24:latest  /usr/bin/run-http...  2 hours ago        Up 2 hours        0.0.0.0:8090->8080/tcp  myweb3
+161f5bbb7932  registry.access.redhat.com/ubi9/httpd-24:latest  /usr/bin/run-http...  About an hour ago  Up About an hour  0.0.0.0:8091->8080/tcp  myweb4
+1ffc6f0d029d  registry.access.redhat.com/ubi9/httpd-24:latest  /usr/bin/run-http...  56 minutes ago     Up 56 minutes     0.0.0.0:8095->8080/tcp  myweb7
+b40f19619622  registry.access.redhat.com/ubi9/httpd-24:latest  /usr/bin/run-http...  44 minutes ago     Up 44 minutes     0.0.0.0:8097->8080/tcp  myweb9
+[root@node3 ~]# docker ps -a
+Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+CONTAINER ID  IMAGE                                                      COMMAND               CREATED            STATUS                     PORTS                   NAMES
+70d66fc22269  registry.access.redhat.com/ubi7:latest                     /bin/bash             24 hours ago       Exited (0) 24 hours ago                            myos
+31db272773f3  registry.access.redhat.com/ubi7:latest                     sleep 40              24 hours ago       Exited (0) 24 hours ago                            myos2
+9550344cd162  registry.access.redhat.com/ubi9/httpd-24:latest            /usr/bin/run-http...  24 hours ago       Exited (0) 24 hours ago                            myweb
+dfb353e99bf6  registry.access.redhat.com/ubi9/httpd-24:latest            /usr/bin/run-http...  2 hours ago        Up 2 hours                                         myweb2
+a37b0a355123  registry.access.redhat.com/ubi9/httpd-24:latest            /usr/bin/run-http...  2 hours ago        Up 2 hours                 0.0.0.0:8090->8080/tcp  myweb3
+161f5bbb7932  registry.access.redhat.com/ubi9/httpd-24:latest            /usr/bin/run-http...  About an hour ago  Up About an hour           0.0.0.0:8091->8080/tcp  myweb4
+e3e3cfcece23  registry.access.redhat.com/ubi9/httpd-24:latest            /usr/bin/run-http...  59 minutes ago     Exited (1) 59 minutes ago  0.0.0.0:8092->8080/tcp  myweb5
+49577ff91f5b  registry.access.redhat.com/ubi9/httpd-24:latest            /usr/bin/run-http...  57 minutes ago     Exited (1) 57 minutes ago  0.0.0.0:8093->8080/tcp  myweb6
+1ffc6f0d029d  registry.access.redhat.com/ubi9/httpd-24:latest            /usr/bin/run-http...  56 minutes ago     Up 56 minutes              0.0.0.0:8095->8080/tcp  myweb7
+f4735c249b99  registry.access.redhat.com/ubi9/httpd-24:latest            /usr/bin/run-http...  46 minutes ago     Exited (1) 46 minutes ago  0.0.0.0:8096->8080/tcp  myweb8
+b40f19619622  registry.access.redhat.com/ubi9/httpd-24:latest            /usr/bin/run-http...  45 minutes ago     Up 45 minutes              0.0.0.0:8097->8080/tcp  myweb9
+5e4081f8b692  registry.access.redhat.com/rhscl/mariadb-101-rhel7:latest  run-mysqld            10 seconds ago     Exited (1) 9 seconds ago   0.0.0.0:3306->3306/tcp  mydb
+[root@node3 ~]# docker logs mydb
+Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+=> sourcing 20-validate-variables.sh ...
+You must either specify the following environment variables:
+  MYSQL_USER (regex: '^[a-zA-Z0-9_]+$')
+  MYSQL_PASSWORD (regex: '^[a-zA-Z0-9_~!@#$%^&*()-=<>,.?;:|]+$')
+  MYSQL_DATABASE (regex: '^[a-zA-Z0-9_]+$')
+Or the following environment variable:
+  MYSQL_ROOT_PASSWORD (regex: '^[a-zA-Z0-9_~!@#$%^&*()-=<>,.?;:|]+$')
+Or both.
+Optional Settings:
+  MYSQL_LOWER_CASE_TABLE_NAMES (default: 0)
+  MYSQL_LOG_QUERIES_ENABLED (default: 0)
+  MYSQL_MAX_CONNECTIONS (default: 151)
+  MYSQL_FT_MIN_WORD_LEN (default: 4)
+  MYSQL_FT_MAX_WORD_LEN (default: 20)
+  MYSQL_AIO (default: 1)
+  MYSQL_KEY_BUFFER_SIZE (default: 32M or 10% of available memory)
+  MYSQL_MAX_ALLOWED_PACKET (default: 200M)
+  MYSQL_TABLE_OPEN_CACHE (default: 400)
+  MYSQL_SORT_BUFFER_SIZE (default: 256K)
+  MYSQL_READ_BUFFER_SIZE (default: 8M or 5% of available memory)
+  MYSQL_INNODB_BUFFER_POOL_SIZE (default: 32M or 50% of available memory)
+  MYSQL_INNODB_LOG_FILE_SIZE (default: 8M or 15% of available memory)
+  MYSQL_INNODB_LOG_BUFFER_SIZE (default: 8M or 15% of available memory)
+
+For more information, see https://github.com/sclorg/mariadb-container
+[root@node3 ~]# docker 
+Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+368645d3bdc25489e926050a169143090effe7ef92d29f48b3c8f4f505b4634f
+[root@node3 ~]# docker ps
+Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+CONTAINER ID  IMAGE                                                      COMMAND               CREATED            STATUS            PORTS                   NAMES
+dfb353e99bf6  registry.access.redhat.com/ubi9/httpd-24:latest            /usr/bin/run-http...  2 hours ago        Up 2 hours                                myweb2
+a37b0a355123  registry.access.redhat.com/ubi9/httpd-24:latest            /usr/bin/run-http...  2 hours ago        Up 2 hours        0.0.0.0:8090->8080/tcp  myweb3
+161f5bbb7932  registry.access.redhat.com/ubi9/httpd-24:latest            /usr/bin/run-http...  About an hour ago  Up About an hour  0.0.0.0:8091->8080/tcp  myweb4
+1ffc6f0d029d  registry.access.redhat.com/ubi9/httpd-24:latest            /usr/bin/run-http...  58 minutes ago     Up 58 minutes     0.0.0.0:8095->8080/tcp  myweb7
+b40f19619622  registry.access.redhat.com/ubi9/httpd-24:latest            /usr/bin/run-http...  46 minutes ago     Up 46 minutes     0.0.0.0:8097->8080/tcp  myweb9
+368645d3bdc2  registry.access.redhat.com/rhscl/mariadb-101-rhel7:latest  run-mysqld            3 seconds ago      Up 3 seconds      0.0.0.0:3306->3306/tcp  mydb2
+[root@node3 ~]# docker exec -it mydb2 bash
+Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+bash-4.2$ mysql -u root
+Welcome to the MariaDB monitor.  Commands end with ; or \g.
+Your MariaDB connection id is 2
+Server version: 10.1.29-MariaDB MariaDB Server
+
+Copyright (c) 2000, 2017, Oracle, MariaDB Corporation Ab and others.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+MariaDB [(none)]> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| mysql              |
+| performance_schema |
+| test               |
++--------------------+
+4 rows in set (0.01 sec)
+
+MariaDB [(none)]> exit
+Bye
+bash-4.2$ exit
+exit
+[root@node3 ~]#
+
+
+Task:3-Completed: PankajRatnadeep,Ipsita,Santosh,Ajay TallaDebasishsenthil G,Omkar ,Chandra,Sanchita,Biswaranjan,Thamizh,Nilayan,Neerav,Rajesh, Shivaprasad, SarthakAtanu,shridhar,Sayali
+
+    
+*
+Task:4
+ Image Build: 
+     
+[root@node3 ~]# vim Containerfile 
+FROM docker.io/redhat/ubi8
+MAINTAINER murali@gmail.com
+
+LABEL description="A apache server for testing purpose"
+ 
+RUN yum install -y httpd && \
+    yum clean all 
+RUN echo "Hello from Containerfile"> /var/www/html/index.html
+
+EXPOSE 80
+CMD ["httpd", "-D", "FOREGROUND"]
+
+[root@node3 ~]# 
+
+[root@node3 ~]# docker build -t myownimg:1.0 .
+Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+STEP 1/8: FROM docker.io/redhat/ubi8
+Trying to pull docker.io/redhat/ubi8:latest...
+Getting image source signatures
+Copying blob 79c20e727b94 done   | 
+Copying config bb4496e662 done   | 
+Writing manifest to image destination
+STEP 2/8: MAINTAINER murali@gmail.com
+--> 4699220362fc
+STEP 3/8: LABEL description="A apache server for testing purpose"
+--> 8550e45325b5
+STEP 4/8: RUN yum install -y httpd 
+Updating Subscription Management repositories.
+Unable to read consumer identity
+
+This system is not registered with an entitlement server. You can use subscription-manager to register.
+
+Red Hat Universal Base Image 8 (RPMs) - BaseOS  1.9 MB/s | 723 kB     00:00    
+Red Hat Universal Base Image 8 (RPMs) - AppStre  11 MB/s | 3.4 MB     00:00    
+Red Hat Universal Base Image 8 (RPMs) - CodeRea 734 kB/s | 186 kB     00:00    
+Dependencies resolved.
+====================================================================================================
+ Package              Arch    Version                                    Repository             Size
+====================================================================================================
+Installing:
+ httpd                x86_64  2.4.37-65.module+el8.10.0+22196+d82931da.2 ubi-8-appstream-rpms  1.4 M
+Installing dependencies:
+ apr                  x86_64  1.6.3-12.el8                               ubi-8-appstream-rpms  130 k
+ apr-util             x86_64  1.6.1-9.el8                                ubi-8-appstream-rpms  106 k
+ httpd-filesystem     noarch  2.4.37-65.module+el8.10.0+22196+d82931da.2 ubi-8-appstream-rpms   45 k
+ httpd-tools          x86_64  2.4.37-65.module+el8.10.0+22196+d82931da.2 ubi-8-appstream-rpms  112 k
+ mailcap              noarch  2.1.48-3.el8                               ubi-8-baseos-rpms      39 k
+ mod_http2            x86_64  1.15.7-10.module+el8.10.0+22335+bb25e47a.1 ubi-8-appstream-rpms  156 k
+ redhat-logos-httpd   noarch  84.5-2.el8                                 ubi-8-baseos-rpms      29 k
+Installing weak dependencies:
+ apr-util-bdb         x86_64  1.6.1-9.el8                                ubi-8-appstream-rpms   25 k
+ apr-util-openssl     x86_64  1.6.1-9.el8                                ubi-8-appstream-rpms   27 k
+Enabling module streams:
+ httpd                        2.4                                                                   
+
+Transaction Summary
+====================================================================================================
+Install  10 Packages
+
+Total download size: 2.1 M
+Installed size: 5.5 M
+Downloading Packages:
+(1/10): apr-1.6.3-12.el8.x86_64.rpm             1.2 MB/s | 130 kB     00:00    
+(2/10): mailcap-2.1.48-3.el8.noarch.rpm         363 kB/s |  39 kB     00:00    
+(3/10): apr-util-1.6.1-9.el8.x86_64.rpm          12 MB/s | 106 kB     00:00    
+(4/10): apr-util-bdb-1.6.1-9.el8.x86_64.rpm     3.4 MB/s |  25 kB     00:00    
+(5/10): apr-util-openssl-1.6.1-9.el8.x86_64.rpm 2.5 MB/s |  27 kB     00:00    
+(6/10): httpd-filesystem-2.4.37-65.module+el8.1 5.0 MB/s |  45 kB     00:00    
+(7/10): httpd-tools-2.4.37-65.module+el8.10.0+2 7.7 MB/s | 112 kB     00:00    
+(8/10): httpd-2.4.37-65.module+el8.10.0+22196+d  23 MB/s | 1.4 MB     00:00    
+(9/10): mod_http2-1.15.7-10.module+el8.10.0+223 5.1 MB/s | 156 kB     00:00    
+(10/10): redhat-logos-httpd-84.5-2.el8.noarch.r  98 kB/s |  29 kB     00:00    
+--------------------------------------------------------------------------------
+Total                                           6.6 MB/s | 2.1 MB     00:00     
+Running transaction check
+Transaction check succeeded.
+Running transaction test
+Transaction test succeeded.
+Running transaction
+  Preparing        :                                                        1/1 
+  Installing       : apr-1.6.3-12.el8.x86_64                               1/10 
+  Running scriptlet: apr-1.6.3-12.el8.x86_64                               1/10 
+  Installing       : apr-util-bdb-1.6.1-9.el8.x86_64                       2/10 
+  Installing       : apr-util-openssl-1.6.1-9.el8.x86_64                   3/10 
+  Installing       : apr-util-1.6.1-9.el8.x86_64                           4/10 
+  Running scriptlet: apr-util-1.6.1-9.el8.x86_64                           4/10 
+  Installing       : httpd-tools-2.4.37-65.module+el8.10.0+22196+d82931    5/10 
+  Running scriptlet: httpd-filesystem-2.4.37-65.module+el8.10.0+22196+d    6/10 
+  Installing       : httpd-filesystem-2.4.37-65.module+el8.10.0+22196+d    6/10 
+  Installing       : redhat-logos-httpd-84.5-2.el8.noarch                  7/10 
+  Installing       : mailcap-2.1.48-3.el8.noarch                           8/10 
+  Installing       : mod_http2-1.15.7-10.module+el8.10.0+22335+bb25e47a    9/10 
+  Installing       : httpd-2.4.37-65.module+el8.10.0+22196+d82931da.2.x   10/10 
+  Running scriptlet: httpd-2.4.37-65.module+el8.10.0+22196+d82931da.2.x   10/10 
+  Verifying        : mailcap-2.1.48-3.el8.noarch                           1/10 
+  Verifying        : redhat-logos-httpd-84.5-2.el8.noarch                  2/10 
+  Verifying        : apr-1.6.3-12.el8.x86_64                               3/10 
+  Verifying        : apr-util-1.6.1-9.el8.x86_64                           4/10 
+  Verifying        : apr-util-bdb-1.6.1-9.el8.x86_64                       5/10 
+  Verifying        : apr-util-openssl-1.6.1-9.el8.x86_64                   6/10 
+  Verifying        : httpd-2.4.37-65.module+el8.10.0+22196+d82931da.2.x    7/10 
+  Verifying        : httpd-filesystem-2.4.37-65.module+el8.10.0+22196+d    8/10 
+  Verifying        : httpd-tools-2.4.37-65.module+el8.10.0+22196+d82931    9/10 
+  Verifying        : mod_http2-1.15.7-10.module+el8.10.0+22335+bb25e47a   10/10 
+Installed products updated.
+
+Installed:
+  apr-1.6.3-12.el8.x86_64                                                       
+  apr-util-1.6.1-9.el8.x86_64                                                   
+  apr-util-bdb-1.6.1-9.el8.x86_64                                               
+  apr-util-openssl-1.6.1-9.el8.x86_64                                           
+  httpd-2.4.37-65.module+el8.10.0+22196+d82931da.2.x86_64                       
+  httpd-filesystem-2.4.37-65.module+el8.10.0+22196+d82931da.2.noarch            
+  httpd-tools-2.4.37-65.module+el8.10.0+22196+d82931da.2.x86_64                 
+  mailcap-2.1.48-3.el8.noarch                                                   
+  mod_http2-1.15.7-10.module+el8.10.0+22335+bb25e47a.1.x86_64                   
+  redhat-logos-httpd-84.5-2.el8.noarch                                          
+
+Complete!
+--> 0377cb424996
+STEP 5/8: RUN yum clean all 
+Updating Subscription Management repositories.
+Unable to read consumer identity
+
+This system is not registered with an entitlement server. You can use subscription-manager to register.
+
+25 files removed
+--> 66b86aadccb6
+STEP 6/8: RUN echo "Hello from Containerfile"> /var/www/html/index.html
+--> b51473075e6d
+STEP 7/8: EXPOSE 80
+--> d837fa370fed
+STEP 8/8: CMD ["httpd", "-D", "FOREGROUND"]
+COMMIT myownimg:1.0
+--> 9b79c25ffeb4
+Successfully tagged localhost/myownimg:1.0
+9b79c25ffeb4171ea1feb930b3faeeeee8ee0777757e2d0c8152cd1d5d3264c1
+[root@node3 ~]# 
+    
+[root@node3 ~]# docker images
+Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+REPOSITORY                                          TAG         IMAGE ID      CREATED         SIZE
+localhost/myownimg                                  1.0         9b79c25ffeb4  31 seconds ago  246 MB
+registry.access.redhat.com/ubi9/httpd-24            latest      f9547578a2f0  9 days ago      326 MB
+docker.io/redhat/ubi8                               latest      bb4496e662fb  9 days ago      213 MB
+docker.io/library/busybox                           latest      af4709625109  4 months ago    4.52 MB
+registry.access.redhat.com/ubi7                     latest      a084eb42a557  8 months ago    219 MB
+registry.access.redhat.com/rhscl/mariadb-101-rhel7  latest      96669f514df0  5 years ago     469 MB
+[root@node3 ~]# docker push localhost/myownimg
+Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+Error: localhost/myownimg: image not known
+[root@node3 ~]# vim Containerfile 
+[root@node3 ~]# docker build -t mysecownimg:1.1 .
+Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+STEP 1/7: FROM docker.io/redhat/ubi8
+STEP 2/7: MAINTAINER murali@gmail.com
+--> Using cache 4699220362fc07375d9aaddbf23decfd945d082bcf8b090053d623ec7a1ea8c7
+--> 4699220362fc
+STEP 3/7: LABEL description="A apache server for testing purpose"
+--> Using cache 8550e45325b56459ff5d31f68453557b860d44b87df1bf5d5d887f77605fd627
+--> 8550e45325b5
+STEP 4/7: RUN yum install -y httpd &&     yum clean all 
+Updating Subscription Management repositories.
+Unable to read consumer identity
+
+This system is not registered with an entitlement server. You can use subscription-manager to register.
+
+Red Hat Universal Base Image 8 (RPMs) - BaseOS  2.8 MB/s | 723 kB     00:00    
+Red Hat Universal Base Image 8 (RPMs) - AppStre  12 MB/s | 3.4 MB     00:00    
+Red Hat Universal Base Image 8 (RPMs) - CodeRea 966 kB/s | 186 kB     00:00    
+Dependencies resolved.
+====================================================================================================
+ Package              Arch    Version                                    Repository             Size
+====================================================================================================
+Installing:
+ httpd                x86_64  2.4.37-65.module+el8.10.0+22196+d82931da.2 ubi-8-appstream-rpms  1.4 M
+Installing dependencies:
+ apr                  x86_64  1.6.3-12.el8                               ubi-8-appstream-rpms  130 k
+ apr-util             x86_64  1.6.1-9.el8                                ubi-8-appstream-rpms  106 k
+ httpd-filesystem     noarch  2.4.37-65.module+el8.10.0+22196+d82931da.2 ubi-8-appstream-rpms   45 k
+ httpd-tools          x86_64  2.4.37-65.module+el8.10.0+22196+d82931da.2 ubi-8-appstream-rpms  112 k
+ mailcap              noarch  2.1.48-3.el8                               ubi-8-baseos-rpms      39 k
+ mod_http2            x86_64  1.15.7-10.module+el8.10.0+22335+bb25e47a.1 ubi-8-appstream-rpms  156 k
+ redhat-logos-httpd   noarch  84.5-2.el8                                 ubi-8-baseos-rpms      29 k
+Installing weak dependencies:
+ apr-util-bdb         x86_64  1.6.1-9.el8                                ubi-8-appstream-rpms   25 k
+ apr-util-openssl     x86_64  1.6.1-9.el8                                ubi-8-appstream-rpms   27 k
+Enabling module streams:
+ httpd                        2.4                                                                   
+
+Transaction Summary
+====================================================================================================
+Install  10 Packages
+
+Total download size: 2.1 M
+Installed size: 5.5 M
+Downloading Packages:
+(1/10): mailcap-2.1.48-3.el8.noarch.rpm         388 kB/s |  39 kB     00:00    
+(2/10): apr-util-1.6.1-9.el8.x86_64.rpm         8.5 MB/s | 106 kB     00:00    
+(3/10): apr-1.6.3-12.el8.x86_64.rpm             1.1 MB/s | 130 kB     00:00    
+(4/10): apr-util-bdb-1.6.1-9.el8.x86_64.rpm     2.2 MB/s |  25 kB     00:00    
+(5/10): apr-util-openssl-1.6.1-9.el8.x86_64.rpm 3.0 MB/s |  27 kB     00:00    
+(6/10): httpd-filesystem-2.4.37-65.module+el8.1 7.4 MB/s |  45 kB     00:00    
+(7/10): httpd-tools-2.4.37-65.module+el8.10.0+2 8.2 MB/s | 112 kB     00:00    
+(8/10): mod_http2-1.15.7-10.module+el8.10.0+223  12 MB/s | 156 kB     00:00    
+(9/10): httpd-2.4.37-65.module+el8.10.0+22196+d  23 MB/s | 1.4 MB     00:00    
+(10/10): redhat-logos-httpd-84.5-2.el8.noarch.r  89 kB/s |  29 kB     00:00    
+--------------------------------------------------------------------------------
+Total                                           6.1 MB/s | 2.1 MB     00:00     
+Running transaction check
+Transaction check succeeded.
+Running transaction test
+Transaction test succeeded.
+Running transaction
+  Preparing        :                                                        1/1 
+  Installing       : apr-1.6.3-12.el8.x86_64                               1/10 
+  Running scriptlet: apr-1.6.3-12.el8.x86_64                               1/10 
+  Installing       : apr-util-bdb-1.6.1-9.el8.x86_64                       2/10 
+  Installing       : apr-util-openssl-1.6.1-9.el8.x86_64                   3/10 
+  Installing       : apr-util-1.6.1-9.el8.x86_64                           4/10 
+  Running scriptlet: apr-util-1.6.1-9.el8.x86_64                           4/10 
+  Installing       : httpd-tools-2.4.37-65.module+el8.10.0+22196+d82931    5/10 
+  Running scriptlet: httpd-filesystem-2.4.37-65.module+el8.10.0+22196+d    6/10 
+  Installing       : httpd-filesystem-2.4.37-65.module+el8.10.0+22196+d    6/10 
+  Installing       : redhat-logos-httpd-84.5-2.el8.noarch                  7/10 
+  Installing       : mailcap-2.1.48-3.el8.noarch                           8/10 
+  Installing       : mod_http2-1.15.7-10.module+el8.10.0+22335+bb25e47a    9/10 
+  Installing       : httpd-2.4.37-65.module+el8.10.0+22196+d82931da.2.x   10/10 
+  Running scriptlet: httpd-2.4.37-65.module+el8.10.0+22196+d82931da.2.x   10/10 
+  Verifying        : mailcap-2.1.48-3.el8.noarch                           1/10 
+  Verifying        : redhat-logos-httpd-84.5-2.el8.noarch                  2/10 
+  Verifying        : apr-1.6.3-12.el8.x86_64                               3/10 
+  Verifying        : apr-util-1.6.1-9.el8.x86_64                           4/10 
+  Verifying        : apr-util-bdb-1.6.1-9.el8.x86_64                       5/10 
+  Verifying        : apr-util-openssl-1.6.1-9.el8.x86_64                   6/10 
+  Verifying        : httpd-2.4.37-65.module+el8.10.0+22196+d82931da.2.x    7/10 
+  Verifying        : httpd-filesystem-2.4.37-65.module+el8.10.0+22196+d    8/10 
+  Verifying        : httpd-tools-2.4.37-65.module+el8.10.0+22196+d82931    9/10 
+  Verifying        : mod_http2-1.15.7-10.module+el8.10.0+22335+bb25e47a   10/10 
+Installed products updated.
+
+Installed:
+  apr-1.6.3-12.el8.x86_64                                                       
+  apr-util-1.6.1-9.el8.x86_64                                                   
+  apr-util-bdb-1.6.1-9.el8.x86_64                                               
+  apr-util-openssl-1.6.1-9.el8.x86_64                                           
+  httpd-2.4.37-65.module+el8.10.0+22196+d82931da.2.x86_64                       
+  httpd-filesystem-2.4.37-65.module+el8.10.0+22196+d82931da.2.noarch            
+  httpd-tools-2.4.37-65.module+el8.10.0+22196+d82931da.2.x86_64                 
+  mailcap-2.1.48-3.el8.noarch                                                   
+  mod_http2-1.15.7-10.module+el8.10.0+22335+bb25e47a.1.x86_64                   
+  redhat-logos-httpd-84.5-2.el8.noarch                                          
+
+Complete!
+Updating Subscription Management repositories.
+Unable to read consumer identity
+
+This system is not registered with an entitlement server. You can use subscription-manager to register.
+
+25 files removed
+--> 3bea40b9a36b
+STEP 5/7: RUN echo "Hello from Containerfile"> /var/www/html/index.html
+--> b36e5749bb81
+STEP 6/7: EXPOSE 80
+--> eeb9f634213f
+STEP 7/7: CMD ["httpd", "-D", "FOREGROUND"]
+COMMIT mysecownimg:1.1
+--> d26499667cc4
+Successfully tagged localhost/mysecownimg:1.1
+d26499667cc4fae3dfa6e222e109ae2b9a70ef530fe4d7954dc9954993a770f4
+[root@node3 ~]# docker images
+Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+REPOSITORY                                          TAG         IMAGE ID      CREATED        SIZE
+localhost/mysecownimg                               1.1         d26499667cc4  3 seconds ago  234 MB
+localhost/myownimg                                  1.0         9b79c25ffeb4  3 minutes ago  246 MB
+registry.access.redhat.com/ubi9/httpd-24            latest      f9547578a2f0  9 days ago     326 MB
+docker.io/redhat/ubi8                               latest      bb4496e662fb  9 days ago     213 MB
+docker.io/library/busybox                           latest      af4709625109  4 months ago   4.52 MB
+registry.access.redhat.com/ubi7                     latest      a084eb42a557  8 months ago   219 MB
+registry.access.redhat.com/rhscl/mariadb-101-rhel7  latest      96669f514df0  5 years ago    469 MB
+
+[root@node3 ~]# docker run -d --name myowncont localhost/myownimg:1.0
+Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+277b1915a6fbf6b927a2388630c783525fcc5fca0ce363b2ec7bc09f7a6f2c51
+[root@node3 ~]# docker ps 
+Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+CONTAINER ID  IMAGE                                                      COMMAND               CREATED         STATUS         PORTS                   NAMES
+dfb353e99bf6  registry.access.redhat.com/ubi9/httpd-24:latest            /usr/bin/run-http...  3 hours ago     Up 3 hours                             myweb2
+a37b0a355123  registry.access.redhat.com/ubi9/httpd-24:latest            /usr/bin/run-http...  3 hours ago     Up 3 hours     0.0.0.0:8090->8080/tcp  myweb3
+161f5bbb7932  registry.access.redhat.com/ubi9/httpd-24:latest            /usr/bin/run-http...  2 hours ago     Up 2 hours     0.0.0.0:8091->8080/tcp  myweb4
+1ffc6f0d029d  registry.access.redhat.com/ubi9/httpd-24:latest            /usr/bin/run-http...  2 hours ago     Up 2 hours     0.0.0.0:8095->8080/tcp  myweb7
+b40f19619622  registry.access.redhat.com/ubi9/httpd-24:latest            /usr/bin/run-http...  2 hours ago     Up 2 hours     0.0.0.0:8097->8080/tcp  myweb9
+92eb6f2dd6a5  registry.access.redhat.com/rhscl/mariadb-101-rhel7:latest  run-mysqld            24 minutes ago  Up 24 minutes  0.0.0.0:3306->3306/tcp  mydb2
+277b1915a6fb  localhost/myownimg:1.0                                     httpd -D FOREGROU...  5 seconds ago   Up 5 seconds                           myowncont
+[root@node3 ~]# docker exec -it myowncont bash
+Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+[root@277b1915a6fb /]# pwd
+/
+[root@277b1915a6fb /]# cd /var/www/html
+[root@277b1915a6fb html]# ls
+index.html
+[root@277b1915a6fb html]# cat index.html 
+Hello from Containerfile
+[root@277b1915a6fb html]# curl localhost:80
+Hello from Containerfile
+[root@277b1915a6fb html]# curl localhost
+Hello from Containerfile
+[root@277b1915a6fb html]# exit
+exit
+[root@node3 ~]#
+    
+    Task:4 - Completed: Debasish Ratnadeep,Neerav, vidhyadhar,Ajay Talla,Rajesh,Sanchita,Santosh,Pankaj,Ipsita,NilayansenthilGSarthak,Biswaranjan,Atanu,shridhar,Sayali
+    
+    
+*03Feb2025:
+
+
+*The below steps (1-7) should be running in all the nodes: 
+Task:5
+Step:1 
+[root@worker2 ~]# cat /etc/hosts 
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4 
+::1         localhost localhost.localdomain localhost6 localhost6.localdomain6 
+ 
+10.0.7.1    master.example.com master 
+10.0.7.2    node1.example.com node1 
+10.0.7.3    node2.example.com node2 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Step:2 
+swapoff -a 
+	systemctl status firewalld ; systemctl stop firewalld ; systemctl disable firewalld 
+# Set SELinux in permissive mode (effectively disabling it) 
+setenforce 0 
+sed -i 's/^SELINUX=enforcing$/SELINUX=permissive/' /etc/selinux/config 
+
+ 
+Step:3 
+yum install wget -y;
+wget https://download.docker.com/linux/centos/7/x86_64/stable/Packages/containerd.io-1.6.10-3.1.el7.x86_64.rpm;
+yum localinstall containerd.io-1.6.10-3.1.el7.x86_64.rpm -y;
+ 
+systemctl enable containerd.service;
+systemctl start  containerd.service;
+systemctl status containerd.service ;
+ 
+ 
+Step:4 
+cat <<EOF | sudo tee /etc/modules-load.d/k8s.conf 
+overlay 
+br_netfilter 
+EOF
+
+sudo modprobe overlay;
+sudo modprobe br_netfilter;
+ 
+Step:5 
+# sysctl params required by setup, params persist across reboots 
+cat <<EOF | sudo tee /etc/sysctl.d/k8s.conf 
+net.bridge.bridge-nf-call-iptables  = 1 
+net.bridge.bridge-nf-call-ip6tables = 1 
+net.ipv4.ip_forward = 1 
+EOF
+ 
+# Apply sysctl params without reboot 
+	sudo sysctl --system 
+ 
+Step:6 
+ cat <<EOF | sudo tee /etc/yum.repos.d/kubernetes.repo 
+[kubernetes] 
+name=Kubernetes 
+baseurl=https://pkgs.k8s.io/core:/stable:/v1.29/rpm/ 
+enabled=1 
+gpgcheck=1 
+gpgkey=https://pkgs.k8s.io/core:/stable:/v1.29/rpm/repodata/repomd.xml.key 
+exclude=kubelet kubeadm kubectl cri-tools kubernetes-cni 
+EOF
+ 
+yum install -y kubelet kubeadm kubectl --disableexcludes=kubernetes;
+systemctl enable --now kubelet;
+ 
+ ======================================================================================
+ Note:  if kubelet is not coming up, pls follow the below steps:
+     
+[root@master system]# systemctl restart network-online.target
+[root@master system]# systemctl status network-online.target
+● network-online.target - Network is Online
+   Loaded: loaded (/usr/lib/systemd/system/network-online.target; static; vendor preset: disabled)
+   Active: active since Tue 2025-02-04 15:33:48 IST; 7s ago
+     Docs: man:systemd.special(7)
+           https://www.freedesktop.org/wiki/Software/systemd/NetworkTarget
+[root@master system]# systemctl daemon-reload
+[root@master system]# systemctl restart kubelet
+[root@master system]# systemctl status kubelet
+● kubelet.service - kubelet: The Kubernetes Node Agent
+   Loaded: loaded (/usr/lib/systemd/system/kubelet.service; enabled; vendor preset: disabled)
+  Drop-In: /usr/lib/systemd/system/kubelet.service.d
+           └─10-kubeadm.conf
+   Active: active (running) since Tue 2025-02-04 15:34:44 IST; 6ms ago
+     Docs: https://kubernetes.io/docs/
+ Main PID: 42601 (kubelet)
+    Tasks: 0 (limit: 48880)
+   Memory: 0B
+   CGroup: /system.slice/kubelet.service
+           └─42601 /usr/bin/kubelet --bootstrap-kubeconfig=/etc/kubernetes/bootstrap-kubelet.conf --ku>
+
+Feb 04 15:34:44 master systemd[1]: Started kubelet: The Kubernetes Node Agent.
+
+==================================================================================
+ 
+Step:7 
+kubeadm init phase preflight 
+ Note: IF there is any error in above command, follow below steps 
+ 
+[root@master ~]# kubeadm init phase preflight 
+I0621 07:18:50.195909    5747 version.go:256] remote version is much newer: v1.30.2; falling back to: stable-1.29 
+[preflight] Running pre-flight checks 
+error execution phase preflight: [preflight] Some fatal errors occurred: 
+        [ERROR CRI]: container runtime is not running: output: time="2024-06-21T07:18:50Z" level=fatal msg="validate service connection: validate CRI v1 runtime API for endpoint \"unix:///var/run/containerd/containerd.sock\": rpc error: code = Unimplemented desc = unknown service runtime.v1.RuntimeService" 
+, error: exit status 1 systemctl restart containerd.service
+[preflight] If you know what you are doing, you can make a check non-fatal with `--ignore-preflight-errors=...` 
+To see the stack trace of this error execute with --v=5 or higher 
+ 
+ #rm /etc/containerd/config.toml 
+	#systemctl restart containerd.service 
+ 
+Now preflight ... 
+ 
+#kubeadm init phase preflight 
+------this should be resulted without any errors------------
+
+Task:5 Completed: Debasish,Santosh,Ajay Talla,NeeravSaxena,Sanchita,senthilGRatnadeepvishnu, Ipsita  Pankaj,omkar,Sarthak,Nilayan,Atanu,shridhar,sayali. Shivaprasad,Yogesh
+
+ Step:8
+-======================================================================================================= 
+Should be run only in Master Node: 
+======================================================================================================== 
+ 
+master#kubeadm init --pod-network-cidr=192.168.0.0/24 
+ ..... 
+ Your Kubernetes control-plane has initialized successfully! 
+ 
+To start using your cluster, you need to run the following as a regular user: 
+ 
+  mkdir -p $HOME/.kube 
+  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config 
+  sudo chown $(id -u):$(id -g) $HOME/.kube/config 
+ 
+Alternatively, if you are the root user, you can run: 
+ 
+  export KUBECONFIG=/etc/kubernetes/admin.conf 
+ 
+You should now deploy a pod network to the cluster. 
+Run "kubectl apply -f [podnetwork].yaml" with one of the options listed at: 
+  https://kubernetes.io/docs/concepts/cluster-administration/addons/ 
+ 
+Then you can join any number of worker nodes by running the following on each as root: 
+ 
+kubeadm join 10.128.0.10:6443 --token x5x7o7.25dctlxi91sg6jqn --discovery-token-ca-cert-hash sha256:eb69c97473f2f7b0de6286230449b8f94ed92dd9d55c02e3c7453e1 
+
+
+
+#cat > join
+#cat join
+
+=================================================================================
+ 
+master#export KUBECONFIG=/etc/kubernetes/admin.conf 
+ 
+	 
+[root@master ~]# kubectl get node 
+NAME                   STATUS     ROLES           AGE    VERSION 
+master.whiteblue.com   NotReady   control-plane   2m5s   v1.25.4 
+[root@master ~]# 
+ 
+[root@master ~]# kubectl get pod -A 
+NAMESPACE     NAME                                           READY   STATUS    RESTARTS   AGE 
+kube-system   coredns-565d847f94-9ffg6                       0/1     Pending   0          4m33s 
+kube-system   coredns-565d847f94-hfk2t                       0/1     Pending   0          4m33s 
+ 
+ 
+wget https://raw.githubusercontent.com/flannel-io/flannel/master/Documentation/kube-flannel.yml 
+ (or)
+ wget https://github.com/coreos/flannel/raw/master/Documentation/kube-flannel.yml
+ 
+ Note: Use vim to edit the existing file "kube-flannel.yml"
+[root@master ~]# vim kube-flannel.yml                                     -------> find the "Network" parameter in this file
+      "Network": "192.168.0.0/24",       ====> change here for our requried pod network 
+      "Backend": { 
+        "Type": "vxlan" 
+      } 
+    } 
+
+ 
+[root@master ~]# kubectl create -f kube-flannel.yml 
+namespace/kube-flannel created 
+clusterrole.rbac.authorization.k8s.io/flannel created 
+clusterrolebinding.rbac.authorization.k8s.io/flannel created 
+serviceaccount/flannel created 
+configmap/kube-flannel-cfg created 
+daemonset.apps/kube-flannel-ds created 
+[root@master ~]# 
+ 
+ 
+ After a min, you  will get the below "Running" State 
+[root@master ~]# kubectl get pod -A 
+NAMESPACE      NAME                                           READY   STATUS    RESTARTS   AGE 
+kube-flannel   kube-flannel-ds-plr6g                          1/1     Running   0          30s 
+kube-system    coredns-565d847f94-9ffg6                       1/1     Running   0          16m 
+kube-system    coredns-565d847f94-hfk2t                       1/1     Running   0          16m 
+ 
+=== 
+ 
+ 
+[root@master ~]# kubectl get node 
+NAME                   STATUS   ROLES           AGE   VERSION 
+master.example.com   Ready    control-plane   17m   v1.25.4 
+[root@master ~]# 
+ 
+=============== 
+In node1 node: 
+=============== 
+[root@node1 ~]# kubeadm join 10.0.7.1:6443 --token xf3lrl.fb7cniz8139fhvwx --discovery-token-ca-cert-hash sha256:1abb0f47f36b68ba0ce1e2373ab30515f87e936e2f334feb643aeee1ed0529f2 
+
+
+Error in Flannel: 
+ 
+[root@master ~]# kubectl get pod -A 
+NAMESPACE      NAME                                           READY   STATUS    RESTARTS      AGE 
+kube-flannel   kube-flannel-ds-plr6g                          1/1     Running   0             3m43s 
+kube-flannel   kube-flannel-ds-rtfwv                          0/1     Error     3 (44s ago)   88s 
+kube-system    coredns-565d847f94-9ffg6                       1/1     Running   0             19m 
+kube-system    coredns-565d847f94-hfk2t                       1/1     Running   0             19m 
+ 
+To fix the error, use below patch command: 
+ 
+ 
+[root@master ~]# kubectl patch node node1 -p '{"spec":{"podCIDR":"192.168.0.0/24"}}' 
+node/worker1.whiteblue.com patched 
+[root@master ~]# 
+ 
+ 
+[root@master ~]# kubectl get pod -A 
+NAMESPACE      NAME                                           READY   STATUS    RESTARTS        AGE 
+kube-flannel   kube-flannel-ds-plr6g                          1/1     Running   0               8m44s 
+kube-flannel   kube-flannel-ds-rtfwv                          1/1     Running   6 (2m56s ago)   6m29s 
+kube-system    coredns-565d847f94-9ffg6                       1/1     Running   0               24m 
+kube-system    coredns-565d847f94-hfk2t                       1/1     Running   0               24m 
+ 
+
+ 
+Now joining node2 node: 
+-========================= 
+ 
+ 
+[root@node2 mnt]# kubeadm join 10.0.7.1:6443 --token xf3lrl.fb7cniz8139fhvwx --discovery-token-ca-cert-hash sha256:1abb0f47f36b68ba0ce1e2373ab30515f87e936e2f334feb643aeee1ed0529f2 
+ 
+ 
+[root@master ~]# kubectl get node 
+NAME                    STATUS   ROLES           AGE   VERSION 
+master.whiteblue.com    Ready    control-plane   32m   v1.25.4 
+worker1.whiteblue.com   Ready    <none>          13m   v1.25.4 
+worker2.whiteblue.com   Ready    <none>          65s   v1.25.4 
+[root@master ~]# kubectl get pod -A 
+NAMESPACE      NAME                                           READY   STATUS    RESTARTS      AGE 
+kube-flannel   kube-flannel-ds-66rzn                          0/1     Error     3 (37s ago)   91s 
+kube-flannel   kube-flannel-ds-plr6g                          1/1     Running   0             16m 
+ 
+ 
+This needs to be patched to fix flannel error: 
+ 
+[root@master ~]#kubectl patch node node2 -p '{"spec":{"podCIDR":"192.168.0.0/24"}}' 
+node/worker2.whiteblue.com patched 
+[root@master ~]# 
+
+
+
+To print the token again:
+   # kubeadm token create --print-join-command
+
+
+
+*04Feb2025:
+To print the token again:
+    #kubeadm token create --print-join-command
+
+To bring back your cluster nodes:
+    Master:
+        swapoff -a
+        export KUBECONFIG=/etc/kubernetes/admin.conf
+        systemctl restart kubelet
+        
+        kubectl get nodes
+        kubectl get pod -A
+        
+    Nodes:
+        swapoff -a
+        systemctl restart kubelet
+
+
+
+
+Delete:
+rm kube-flannel.yml
+kubectl delete ds kube-flannel-ds -n kube-flannel
+kubectl delete ns kube-flannel
+
+Task:6-Completed : Ajay Talla,Debasish, Ratnadeep,Sarthak, Sanchita,Neerav,shridhar,atanu, santosh,nilayanPankaj,sayali,Yogesh
+
+
+*05Feb2025
+
+=========================================================================
+Master Node:
+#swapoff -a
+#export KUBECONFIG=/etc/kubernetes/admin.conf
+#systemctl restart kubelet
+#kubectl get nodes
+kubectl get nodes
+Worker Nodes:
+
+#swapoff -a
+#systemctl restart kubelet
+
+Note if the above steps not working, pls follow the below procedure:kubeadm token create --print-join-command 
+
+Master Node:
+#swapoff -a    -----> edit /etc/fstab file and comment that swap line
+#kubeadm reset
+#kubeadm init phase preflight
+#kubeadm init --pod-network-cidr=192.168.0.0/24
+
+Note: collect the last few lines and store in "join" file
+kubectl get nodes
+#export KUBECONFIG=/etc/kubernetes/admin.conf
+#kubectl get nodes  ---> now this should work
+kubeadm token create --print-join-command 
+Join command to create
+#kubeadm token create --print-join-command 
+
+Worker Nodes:
+
+#swapoff -a      ---> edit /etc/fstab line 
+#systemctl restart kubelet
+#kubeadm reset
+#kubeadm init phase preflight
+
+Now use join command --> take it from master
+#kubeadm .......(refer the join command as above)
+Now check in Master, node1 should be Ready state
+
+Follow the same above procedure for node2 also.
+=============================================================
+Static Pods: (not to change anything here - just for info. only)
+    
+    master@cd /etc/kubernetes/manifests
+    master@lskubeadm token create --print-join-command 
+    master@kube-scheduler  etcd-master controller-manager kube-apiserver
+    
+    Note: these above components are referred to as Static pods - if they remove from that location, then you cannot able to find the resective pods. 
+    
+    YAML:
+
+1.Dictionary words:
+    name=raj
+2. Listing
+     fruits:
+        - apple
+        - orange
+        - banana
+3. Parent/Child Relationship (Indentation)
+Linux: 
+    useradd u10    
+Yaml:
+    user:
+    name: u10
+    state: present    
+----------------------------
+   user:    ---> Py Module
+       name: u10    ---> prop of the module
+       state: present    ---->  prop of the module
+
+Kubernetes key properties:
+    1. apiVersion: v1
+    2. kind: object (pod, deployment, replicaset, service)
+    3. metadata: data for the above object
+    4. spec: like config for the object
+
+*Pod Creation:
+
+[root@master ~]# kubectl run mypod --image nginx --dry-run=client -o yaml > mypod.yml
+
+[root@master ~]# vim mypod.yml
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: mypod
+  name: myfirstpod
+spec:
+  containers:
+  - image: nginx
+    name: mypodcont
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}
+[root@master ~]# 
+
+[root@master ~]# kubectl create -f mypod.yml
+pod/myfirstpod created
+[root@master ~]# kubectl get pod
+NAME         READY   STATUS              RESTARTS   AGE
+myfirstpod   0/1     ContainerCreating   0          13s
+[root@master ~]# kubectl get pod
+NAME         READY   STATUS    RESTARTS   AGE
+myfirstpod   1/1     Running   0          16s
+[root@master ~]# kubectl get pod -o wide
+NAME         READY   STATUS    RESTARTS   AGE   IP            NODE    NOMINATED NODE   READINESS GATES
+myfirstpod   1/1     Running   0          30s   192.168.0.2   node2   <none>           <none>
+[root@master ~]# 
+
+Task7-Completed :Omkar,SanchitavishnuRatnadeep,,Ipsita SantoshSenthilG,Thamizh,Ajay Talla,Neerav nilayanSaxena,Pankaj,Biswaranjan,shridhar,Debasish,Sarthak,chandra, Shivaprasad ,sayali
+
+
+Task:8
+*Replicaset Creation:
+
+[root@master ~]# vim replicaset.yml
+apiVersion: apps/v1
+kind: ReplicaSet 
+metadata:
+  creationTimestamp: null
+  labels:
+    app: myrs
+  name: myrs
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: myrs
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: myrs
+    spec:
+      containers:
+      - image: nginx
+        name: nginx
+        resources: {}
+status: {}
+
+
+[root@master ~]# kubectl get pod
+No resources found in default namespace.
+[root@master ~]# kubectl create -f replicaset.yml 
+replicaset.apps/myrs created
+[root@master ~]# kubectl get rs
+NAME   DESIRED   CURRENT   READY   AGE
+myrs   2         2         2       7s
+[root@master ~]# kubectl get replicaset
+NAME   DESIRED   CURRENT   READY   AGE
+myrs   2         2         2       13s
+[root@master ~]# kubectl get pod
+NAME         READY   STATUS    RESTARTS   AGE
+myrs-hndk9   1/1     Running   0          20s
+myrs-vldn5   1/1     Running   0          20s
+[root@master ~]# kubectl delete pod myrs-hndk9 
+pod "myrs-hndk9" deleted
+[root@master ~]# kubectl get pod
+NAME         READY   STATUS              RESTARTS   AGE
+myrs-vldn5   1/1     Running             0          46s
+myrs-vp96w   0/1     ContainerCreating   0          3s
+[root@master ~]# kubectl get pod
+NAME         READY   STATUS    RESTARTS   AGE
+myrs-vldn5   1/1     Running   0          62s
+myrs-vp96w   1/1     Running   0          19s
+[root@master ~]# kubectl get pod -o wide
+NAME         READY   STATUS    RESTARTS   AGE   IP            NODE    NOMINATED NODE   READINESS GATES
+myrs-vldn5   1/1     Running   0          96s   192.168.0.3   node2   <none>           <none>
+myrs-vp96w   1/1     Running   0          53s   192.168.0.4   node1   <none>           <none>
+[root@master ~]# kubectl scale --replicas=4 rs myrs 
+replicaset.apps/myrs scaled
+[root@master ~]# kubectl get pod -o wide
+NAME         READY   STATUS    RESTARTS   AGE     IP            NODE    NOMINATED NODE   READINESS GATES
+myrs-6gn5z   1/1     Running   0          4s      192.168.0.4   node2   <none>           <none>
+myrs-rb4z2   1/1     Running   0          4s      192.168.0.5   node1   <none>           <none>
+myrs-vldn5   1/1     Running   0          2m32s   192.168.0.3   node2   <none>           <none>
+myrs-vp96w   1/1     Running   0          109s    192.168.0.4   node1   <none>           <none>
+[root@master ~]# kubectl scale --replicas=2 rs myrs 
+replicaset.apps/myrs scaled
+[root@master ~]# kubectl get pod -o wide
+NAME         READY   STATUS    RESTARTS   AGE     IP            NODE    NOMINATED NODE   READINESS GATES
+myrs-vldn5   1/1     Running   0          3m2s    192.168.0.3   node2   <none>           <none>
+myrs-vp96w   1/1     Running   0          2m19s   192.168.0.4   node1   <none>           <none>
+[root@master ~]# kubectl scale --replicas=5 rs myrs 
+replicaset.apps/myrs scaled
+[root@master ~]# kubectl get pod -o wide
+NAME         READY   STATUS              RESTARTS   AGE     IP            NODE    NOMINATED NODE   READINESS GATES
+myrs-5rk5h   0/1     ContainerCreating   0          4s      <none>        node2   <none>           <none>
+myrs-rhvxz   1/1     Running             0          4s      192.168.0.5   node2   <none>           <none>
+myrs-vldn5   1/1     Running             0          4m45s   192.168.0.3   node2   <none>           <none>
+myrs-vp96w   1/1     Running             0          4m2s    192.168.0.4   node1   <none>           <none>
+myrs-xjgzr   1/1     Running             0          4s      192.168.0.6   node1   <none>           <none>
+[root@master ~]# 
+
+Online-Modify:
+    [root@master ~]# kubectl edit rs myrs -o yaml
+     -- change the replicas here------
+ OFFLine Modify:
+[root@master ~]# vim replicaset.yml 
+-----change replicas to 3-----------
+[root@master ~]# kubectl apply -f replicaset.yml
+Warning: resource replicasets/myrs is missing the kubectl.kubernetes.io/last-applied-configuration annotation which is required by kubectl apply. kubectl apply should only be used on resources created declaratively by either kubectl create --save-config or kubectl apply. The missing annotation will be patched automatically.
+replicaset.apps/myrs configured
+
+[root@master ~]# kubectl get rs
+NAME   DESIRED   CURRENT   READY   AGE
+myrs   3         3         3       47m
+
+
+[root@master ~]# vim replicaset.yml 
+----change the replicas=3
+[root@master ~]# kubectl apply -f replicaset.yml
+Warning: resource replicasets/myrs is missing the kubectl.kubernetes.io/last-applied-configuration annotation which is required by kubectl apply. kubectl apply should only be used on resources created declaratively by either kubectl create --save-config or kubectl apply. The missing annotation will be patched automatically.
+replicaset.apps/myrs configured
+
+
+Task:8-Completed Debasish, SantoshSanchita,Senthil G,Ajay Talla,Pankaj, ratnadeep, Shivaprasad,Thamizh,Biswaranjan,Omkar,Sarthak,Nilayan,Neerav,Ipsita,shridhar,sayali
+
+Task:9
+*Namespace:
+[root@master ~]# kubectl get ns
+NAME              STATUS   AGE
+default           Active   47h
+kube-flannel      Active   47h
+kube-node-lease   Active   47h
+kube-public       Active   47h
+kube-system       Active   47h
+[root@master ~]# 
+
+[root@master ~]# kubectl get pod
+No resources found in default namespace.
+[root@master ~]# 
+
+Without switching, getting the other resources using -n option:
+    
+[root@master ~]# kubectl get pod -n kube-system
+NAME                             READY   STATUS    RESTARTS      AGE
+coredns-76f75df574-bqfst         1/1     Running   1 (34h ago)   47hvim mydeploy.yml
+coredns-76f75df574-z94hn         1/1     Running   1 (34h ago)   47h
+etcd-master                      1/1     Running   1 (34h ago)   47h
+kube-apiserver-master            1/1     Running   1 (34h ago)   47h
+kube-controller-manager-master   1/1     Running   1 (34h ago)   47h
+kube-proxy-2rg7r                 1/1     Running   1 (34h ago)   47h
+kube-proxy-g4nmz                 1/1     Running   1 (34h ago)   47h
+kube-proxy-wxj77                 1/1     Running   1 (34h ago)   47h
+kube-scheduler-master            1/1     Running   0             147m
+[root@master ~]# 
+
+To switch to another namespace:
+    
+[root@master ~]# kubectl config set-context --current --namespace=default
+Context "kubernetes-admin@kubernetes" modified
+
+To understand which namespace you are in:
+
+[root@master ~]# kubectl config get-contexts
+CURRENT   NAME                          CLUSTER      AUTHINFO           NAMESPACE
+*         kubernetes-admin@kubernetes   kubernetes   kubernetes-admin   kube-system
+
+    
+Task:9-Completed:  Debasish,Senthil G IpsitaSanchita,Sarthak,Ajay Talla,Omkar, Shivaprasad, Santosh,Thamizh,Nilayan Ratnadeep,Neerav,Shridhar,BiswaranjanvishnuPankaj,sayali
+
+
+*06Feb2025
+Task10 
+Deployment:
+
+#kubectl create deploy mydeploy --image=nginx --dry-run=client -o yaml >mydeploy.yml
+#vim mydeploy.yml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: mydeploy
+  name: mydeploy
+spec:
+  replicas: 8
+  selector:
+    matchLabels:
+      app: mydeploy
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: mydeploy
+    spec:
+      containers:
+      - image: nginx
+        name: nginx
+        resources: {}
+status: {}
+---save----
+[root@master ~]# kubectl create -f mydeploy.yml
+deployment.apps/mydeploy created
+[root@master ~]# kubectl get pod -o wide
+NAME                        READY   STATUS              RESTARTS   AGE   IP       NODE    NOMINATED NODE   READINESS GATES
+mydeploy-5588d64c7d-45v97   0/1     ContainerCreating   0          5s    <none>   node1   <none>           <none>
+mydeploy-5588d64c7d-4fkpt   0/1     ContainerCreating   0          5s    <none>   node1   <none>           <none>kubectl create -f mydeploy.yml
+error: error validating "mydeploy.yml": error validating data: failed to download openapi: Get "http://localhost:8080/openapi/v2?timeout=32s": dial tcp [::1]:8080: connect: connection refused; if you choose to ignore these errors, turn validation off with --validate=false
+
+mydeploy-5588d64c7d-8qx6d   0/1     ContainerCreating   0          5s    <none>   node2   <none>           <none>
+mydeploy-5588d64c7d-clpmv   0/1     ContainerCreating   0          5s    <none>   node2   <none>           <none>
+mydeploy-5588d64c7d-gzhzw   0/1     ContainerCreating   0          5s    <none>   node2   <none>           <none>
+mydeploy-5588d64c7d-krtpf   0/1     ContainerCreating   0          5s    <none>   node1   <none>           <none>
+mydeploy-5588d64c7d-qrvfn   0/1     ContainerCreating   0          5s    <none>   node1   <none>           <none>
+mydeploy-5588d64c7d-r9rm9   0/1     ContainerCreating   0          5s    <none>   node2   <none>           <none>
+[root@master ~]# 
+
+Online modification:
+    
+ RollingUpdate stratergy:   
+[root@master ~]# kubectl edit deploy mydeploy -o yaml
+Change the image from nginx to httpd
+
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+
+Change the image from nginx to httpd
+
+[root@master ~]# kubectl get pod -o wide
+NAME                        READY   STATUS    RESTARTS   AGE   IP             NODE    NOMINATED NODE   READINESS GATES
+mydeploy-59f4d77b6f-4pgfg   1/1     Running   0          20s   192.168.0.37   node2   <none>           <none>
+mydeploy-59f4d77b6f-dpkpw   1/1     Running   0          21s   192.168.0.36   node2   <none>           <none>
+mydeploy-59f4d77b6f-f588j   1/1     Running   0          20s   192.168.0.42   node1   <none>           <none>
+mydeploy-59f4d77b6f-fglvg   1/1     Running   0          22s   192.168.0.39   node1   <none>           <none>
+mydeploy-59f4d77b6f-fqfcw   1/1     Running   0          22s   192.168.0.40   node1   <none>           <none>
+mydeploy-59f4d77b6f-tqkkv   1/1     Running   0          22s   192.168.0.35   node2   <none>           <none>
+mydeploy-59f4d77b6f-zhdrp   1/1     Running   0          21s   192.168.0.41   node1   <none>           <none>
+mydeploy-59f4d77b6f-zqmh5   1/1     Running   0          22s   192.168.0.34   node2   <none>           <none>
+[root@master ~]# 
+
+Recreate Stratergy:  (Remove all  
+[root@master ~]# kubectl edit deploy mydeploy -o yaml
+
+
+  strategy:
+    type: Recreate
+    
+Change the image from httpd to nginx
+
+[root@master ~]# kubectl get pod -o wide
+NAME                        READY   STATUS    RESTARTS   AGE   IP             NODE    NOMINATED NODE   READINESS GATES
+mydeploy-58cb6c4b77-2tczg   1/1     Running   0          4s    192.168.0.46   node1   <none>           <none>
+mydeploy-58cb6c4b77-4w8gp   1/1     Running   0          4s    192.168.0.45   node1   <none>           <none>
+mydeploy-58cb6c4b77-7llqg   1/1     Running   0          4s    192.168.0.38   node2   <none>           <none>
+mydeploy-58cb6c4b77-888ck   1/1     Running   0          4s    192.168.0.40   node2   <none>           <none>
+mydeploy-58cb6c4b77-nm2nz   1/1     Running   0          4s    192.168.0.39   node2   <none>           <none>
+mydeploy-58cb6c4b77-tb9vq   1/1     Running   0          4s    192.168.0.44   node1   <none>           <none>
+mydeploy-58cb6c4b77-tdl6v   1/1     Running   0          4s    192.168.0.43   node1   <none>           <none>
+mydeploy-58cb6c4b77-x4w5v   1/1     Running   0          4s    192.168.0.41   node2   <none>           <none>
+[root@master ~]# 
+
+
+Task10-Completed: Santosh,Debasish,Neerav,Ajay Talla,Ratnadeep,Omkar,Shridhar,Ipsita, Shivaprasadnilayan,Pankaj, Sanchita,Sayali
+
+
+*06Feb2025:
+    
+*Scheduling:
+Task:11
+nodeName:
+    
+#vim mysecdeploy.yml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: mydeploy
+  name: mysecdeploy
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: mydeploy
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: mydeploy
+    spec:
+      containers:
+      - image: nginx
+        name: apache
+        imagePullPolicy: Never
+        resources: {}
+      nodeName: node1
+status: {}
+[root@master ~]# kubectl create -f mysecdeploy.yml
+
+[root@master ~]# kubectl get pod -o wide
+NAME                           READY   STATUS    RESTARTS   AGE   IP             NODE    NOMINATED NODE   READINESS GATES
+mysecdeploy-78c6d79b86-h7h2v   1/1     Running   0          8s    192.168.0.53   node1   <none>           <none>
+mysecdeploy-78c6d79b86-p5948   1/1     Running   0          8s    192.168.0.52   node1   <none>           <none>
+[root@master ~]# kubectl scale --replicas=8 deploy mysecdeploy
+deployment.apps/mysecdeploy scaled
+[root@master ~]# kubectl get pod -o wide
+NAME                           READY   STATUS              RESTARTS   AGE   IP             NODE    NOMINATED NODE   READINESS GATES
+mysecdeploy-78c6d79b86-5dcvg   0/1     ContainerCreating   0          2s    <none>         node1   <none>           <none>
+mysecdeploy-78c6d79b86-5xs46   0/1     ContainerCreating   0          2s    <none>         node1   <none>           <none>
+mysecdeploy-78c6d79b86-7fhpq   0/1     ContainerCreating   0          2s    <none>         node1   <none>           <none>
+mysecdeploy-78c6d79b86-b8b94   0/1     ContainerCreating   0          2s    <none>         node1   <none>           <none>
+mysecdeploy-78c6d79b86-f2bm5   0/1     ContainerCreating   0          2s    <none>         node1   <none>           <none>
+mysecdeploy-78c6d79b86-h7h2v   1/1     Running             0          31s   192.168.0.53   node1   <none>           <none>
+mysecdeploy-78c6d79b86-jcs28   0/1     ContainerCreating   0          2s    <none>         node1   <none>           <none>
+mysecdeploy-78c6d79b86-p5948   1/1     Running             0          31s   192.168.0.52   node1   <none>           <none>
+[root@master ~]# 
+
+Task11-Completed: Ajay Talla,Debasish, Santosh,vishnu,Neerav Ratnadeep,Omkar,Nilayan, Shivaprasad,Thamizh,Ipsita,BiswaranjanSenthil G,Pankaj,Sanchita,Shridhar,Sayali
+
+
+Task:12
+nodeSelector:
+    
+#vim mythirddep.yml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: mydeploy
+  name: mythirddeploy
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: mydeploy
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: mydeploy
+    spec:
+      containers:
+      - image: nginx
+        name: apache
+        imagePullPolicy: Never
+        resources: {}
+      nodeSelector: 
+        env: prod
+status: {}
+[root@master ~]# kubectl create -f mythirddep.yml
+
+Node should be labeled accordingly
+[root@master ~]#kubectl label node node1 env=prod
+[root@master ~]# kubectl describe node node1 | grep -A8 Label
+Labels:             beta.kubernetes.io/arch=amd64
+                    beta.kubernetes.io/os=linux
+                    env=prod
+                    kubernetes.io/arch=amd64
+                    kubernetes.io/hostname=node1
+                    kubernetes.io/os=linux
+Annotations:        flannel.alpha.coreos.com/backend-data: {"VNI":1,"VtepMAC":"56:d7:c8:91:87:4e"}
+                    flannel.alpha.coreos.com/backend-type: vxlan
+                    flannel.alpha.coreos.com/kube-subnet-manager: true
+
+[root@master ~]# kubectl get pod -o wide
+NAME                             READY   STATUS    RESTARTS   AGE   IP             NODE    NOMINATED NODE   READINESS GATES
+mythirddeploy-5877798d5d-lq8k5   1/1     Running   0          3s    192.168.0.68   node1   <none>           <none>
+mythirddeploy-5877798d5d-mk5nm   1/1     Running   0          3s    192.168.0.71   node1   <none>           <none>
+mythirddeploy-5877798d5d-mtzll   1/1     Running   0          3s    192.168.0.69   node1   <none>           <none>
+mythirddeploy-5877798d5d-zhb5t   1/1     Running   0          2s    192.168.0.70   node1   <none>           <none>
+[root@master ~]# 
+
+Suppose if any file which doesn't have specific requirements, like below;
+#vim myfourthdep.yml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: mydeploy
+  name: myfourthdeploy
+spec:  
+  replicas: 4
+  selector:
+    matchLabels:
+      app: mydeploy
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: mydeploy
+    spec:
+      containers:
+      - image: nginx
+        name: apache
+        imagePullPolicy: Never
+        resources: {}
+status: {}
+
+[root@master ~]# kubectl create -f myfourthdep.yml 
+deployment.apps/myfourthdeploy created
+[root@master ~]# kubectl get pod -o wide
+NAME                              READY   STATUS    RESTARTS   AGE     IP             NODE    NOMINATED NODE   READINESS GATES
+myfourthdeploy-59f4d77b6f-b88xx   1/1     Running   0          4s      192.168.0.56   node2   <none>           <none>
+myfourthdeploy-59f4d77b6f-bwqfh   1/1     Running   0          4s      192.168.0.72   node1   <none>           <none>
+myfourthdeploy-59f4d77b6f-k8hdm   1/1     Running   0          4s      192.168.0.73   node1   <none>           <none>
+myfourthdeploy-59f4d77b6f-nh95f   1/1     Running   0          4s      192.168.0.55   node2   <none>           <none>
+mythirddeploy-5877798d5d-lq8k5    1/1     Running   0          2m49s   192.168.0.68   node1   <none>           <none>
+mythirddeploy-5877798d5d-mk5nm    1/1     Running   0          2m49s   192.168.0.71   node1   <none>           <none>
+mythirddeploy-5877798d5d-mtzll    1/1     Running   0          2m49s   192.168.0.69   node1   <none>           <none>
+mythirddeploy-5877798d5d-zhb5t    1/1     Running   0          2m48s   192.168.0.70   node1   <none>           <none>
+[root@master ~]# 
+
+Note:  Any simple requirements, can even catch up the nodes;  Thats what shown in the above example
+
+==============================================
+How to remove the label;
+[root@master ~]# kubectl label node node1 env-
+===============================================
+
+This problem can be solved with the below concepts:
+ 
+    
+    Task:12-CompletedNeerav, Santosh,Ajay Talla,Omkar,Ratnadeep,DebasishNilayan,Ipsita, Shivaprasad Senthil G,Neerav,Pankaj,Sanchita,Shridhar
+    
+    
+    Task:13
+Taints/Tolerance:
+
+#vim sixthdep.yml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: mydeploy
+  name: mysixthdeploy
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: mydeploy
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: mydeploy
+    spec:
+      containers:
+      - image: nginx
+        name: apache
+        imagePullPolicy: Never
+        resources: {}
+status: {}
+
+Effect1: NoSchedule:
+[root@master ~]# kubectl taint node node1 crit=five:NoSchedule
+node/node1 tainted
+[root@master ~]# kubectl describe node node1 | grep Taint
+Taints:             crit=five:NoSchedule
+[root@master ~]# 
+
+[root@master ~]# kubectl describe node node2 | grep Taint
+Taints:             <none>
+[root@master ~]# 
+
+[root@master ~]# kubectl create -f mysixthdep.yml 
+deployment.apps/mysixthdeploy created
+[root@master ~]# kubectl get pod -o wide
+NAME                             READY   STATUS    RESTARTS   AGE   IP             NODE    NOMINATED NODE   READINESS GATES
+mysixthdeploy-59f4d77b6f-98snc   1/1     Running   0          4s    192.168.0.61   node2   <none>           <none>
+mysixthdeploy-59f4d77b6f-rmkjt   1/1     Running   0          4s    192.168.0.63   node2   <none>           <none>
+mysixthdeploy-59f4d77b6f-xb2sc   1/1     Running   0          4s    192.168.0.64   node2   <none>           <none>
+mysixthdeploy-59f4d77b6f-z7lxp   1/1     Running   0          4s    192.168.0.62   node2   <none>           <none>
+[root@master ~]# 
+
+Effect:2-NoExecute:
+[root@master ~]# kubectl taint node node2 crit=four:NoExecute
+node/node2 tainted
+[root@master ~]# kubectl get pod -o wide
+NAME                             READY   STATUS    RESTARTS   AGE   IP       NODE     NOMINATED NODE   READINESS GATES
+mysixthdeploy-59f4d77b6f-2pgng   0/1     Pending   0          10s   <none>   <none>   <none>           <none>
+mysixthdeploy-59f4d77b6f-f4bzp   0/1     Pending   0          10s   <none>   <none>   <none>           <none>
+mysixthdeploy-59f4d77b6f-gk9qm   0/1     Pending   0          10s   <none>   <none>   <none>           <none>
+mysixthdeploy-59f4d77b6f-j6qbh   0/1     Pending   0          10s   <none>   <none>   <none>           <none>
+[root@master ~]# 
+
+Note:  The above in pending state as because, the taint effect is NoExecute - and node1 taint effect is NoSchedule
+
+Effect:3-PreferNoSchedule:
+[root@master ~]# kubectl describe node node1 | grep Taint
+Taints:             crit=five:NoSchedule
+[root@master ~]# kubectl taint node node1 crit-
+node/node1 untainted
+[root@master ~]# kubectl taint node node1 crit=five:PreferNoSchedule
+node/node1 tainted
+[root@master ~]# kubectl get pod -o wide
+NAME                             READY   STATUS    RESTARTS   AGE     IP             NODE    NOMINATED NODE   READINESS GATES
+mysixthdeploy-59f4d77b6f-2pgng   1/1     Running   0          2m35s   192.168.0.78   node1   <none>           <none>
+mysixthdeploy-59f4d77b6f-f4bzp   1/1     Running   0          2m35s   192.168.0.80   node1   <none>           <none>
+mysixthdeploy-59f4d77b6f-gk9qm   1/1     Running   0          2m35s   192.168.0.79   node1   <none>           <none>
+mysixthdeploy-59f4d77b6f-j6qbh   1/1     Running   0          2m35s   192.168.0.81   node1   <none>           <none>
+[root@master ~]# 
+
+Note: As we preferred node1 taint effect as PreferNoSchedule, pods started running on node1.
+
+Task:13-Completed-Debasish,Ajay Talla,Ratnadeep,Omkar,Nilayan,Santosh,Neerav,Biswaranjan,Pankaj,Sanchita,Shridhar
+
+Task:14
+Tolerance:
+    
+[root@master ~]# kubectl taint node node1 env=prod:NoSchedule
+node/node1 tainted
+[root@master ~]# kubectl describe node node1 | grep Taint
+Taints:             env=prod:NoSchedule
+
+[root@master ~]# kubectl taint node node2 env=dev:NoSchedule
+node/node2 tainted
+[root@master ~]# kubectl describe node node2 | grep Taint
+Taints:             env=dev:NoSchedule
+[root@master ~]# kubectl describe node node1 | grep Taint
+Taints:             env=prod:NoSchedule
+[root@master ~]# kubectl describe node node2 | grep Taint
+Taints:             env=dev:NoSchedule
+
+[root@master ~]# vim mysixthdep.yml 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: mydeploy
+  name: mysixthdeploy
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: mydeploy
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: mydeploy
+    spec:
+      containers:
+      - image: nginx
+        name: apache
+        imagePullPolicy: Never
+        resources: {}
+status: {}
+[root@master ~]# 
+
+[root@master ~]# kubectl get pod -o wide
+NAME                             READY   STATUS    RESTARTS   AGE    IP       NODE     NOMINATED NODE   READINESS GATES
+mysixthdeploy-59f4d77b6f-4nfbv   0/1     Pending   0          2m1s   <none>   <none>   <none>           <none>
+mysixthdeploy-59f4d77b6f-gl4zx   0/1     Pending   0          2m1s   <none>   <none>   <none>           <none>
+mysixthdeploy-59f4d77b6f-qh8r4   0/1     Pending   0          2m1s   <none>   <none>   <none>           <none>
+mysixthdeploy-7855c9b5bd-mm2sv   0/1     Pending   0          3s     <none>   <none>   <none>           <none>
+mysixthdeploy-7855c9b5bd-rnbjx   0/1     Pending   0          3s     <none>   <none>   <none>           <none>
+
+
+[root@master ~]# kubectl edit deploy mysixthdeploy -o yaml
+Apply the tolerance as below;
+	tolerations:
+      - effect: NoSchedule
+        key: env
+        operator: Equal
+        value: prod
+
+[root@master ~]# kubectl get pod -o wide
+NAME                             READY   STATUS    RESTARTS   AGE     IP             NODE    NOMINATED NODE   READINESS GATES
+mysixthdeploy-7855c9b5bd-b6qxt   1/1     Running   0          2m46s   192.168.0.86   node1   <none>           <none>
+mysixthdeploy-7855c9b5bd-mm2sv   1/1     Running   0          4m43s   192.168.0.85   node1   <none>           <none>
+mysixthdeploy-7855c9b5bd-rffcs   1/1     Running   0          2m46s   192.168.0.87   node1   <none>           <none>
+mysixthdeploy-7855c9b5bd-rnbjx   1/1     Running   0          4m43s   192.168.0.84   node1   <none>           <none>
+[root@master ~]# 
+
+Task:14 Completed: Santosh,Ajay Talla,Nilayan,Neerav Ratnadeep,Debasish,Omkar,Biswaranjan,Pankaj,Sanchita,Shridhar
+
+*07Feb2025:
+Task:15
+Networking:
+    Service:
+        
+    $ kubectl create deploy nginxsvc  --image=nginx --dry-run=client -o yaml > nginxsvc.yml
+    $ kubectl create -f nginxsvc.yml 
+    $ kubectl get all 
+    
+    
+ Expose the service
+    $ kubectl expose deploy nginxsvc --port=80  
+    
+    $ kubectl get svc nginxsvc -o yaml  
+ apiVersion: v1 
+kind: Service 
+metadata: 
+  creationTimestamp: "2023-11-16T09:33:08Z" 
+  labels: 
+    app: nginxsvc 
+  name: nginxsvc 
+  namespace: default 
+  resourceVersion: "39621" 
+  uid: a76667f4-b058-44d4-bd02-796ad6d23278 
+spec: 
+  clusterIP: 10.96.24.47 
+  clusterIPs: 
+  - 10.96.24.47 
+  internalTrafficPolicy: Cluster 
+  ipFamilies: 
+  - IPv4 
+  ipFamilyPolicy: SingleStack 
+  ports: 
+  - port: 80      ---------------------------------> On the Service (SVC)
+    protocol: TCP 
+    targetPort: 80  -------------------> On the Target
+  selector: 
+    app: nginxsvc 
+  sessionAffinity: None 
+  type: ClusterIP 
+status: 
+  loadBalancer: {} 
+$  
+
+ Gather the endpoint and service IP. 
+$ kubectl get endpoints  
+NAME         ENDPOINTS                                   AGE 
+kubernetes   172.18.0.4:6443                             14h 
+nginxsvc     10.244.1.3:80,10.244.1.4:80,10.244.2.3:80   2m41s 
+$  
+$ kubectl get svc  
+NAME         TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)   AGE 
+kubernetes   ClusterIP   10.96.0.1     <none>        443/TCP   14h 
+nginxsvc     ClusterIP   10.96.24.47   <none>        80/TCP    2m51s 
+$  
+
+Task-15:  Completed : Ratnadeep, Santosh,Ajay Talla,Omkar,Nilayan,Debasish,Neerav,Biswaranjan,Pankaj,Sanchita
+
+
+Task:16
+NodePort:
+
+Edit the service and update the type as NodePort. After editing the contents should be similar to next step
+$ kubectl edit svc nginxsvc  
+...
+  ports:
+  - nodePort: 32000 -----> included
+    port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: nginxsvc
+  sessionAffinity: None
+  type: NodePort   ----------> Edited
+...
+service/nginxsvc edited 
+
+
+Get the yaml form of service configuration. Additions highlighted in bold. 
+$ kubectl get svc nginxsvc -o yaml  
+apiVersion: v1 
+kind: Service 
+metadata: 
+  creationTimestamp: "2023-11-16T09:33:08Z" 
+  labels: 
+    app: nginxsvc 
+  name: nginxsvc 
+  namespace: default 
+  resourceVersion: "40350" 
+  uid: a76667f4-b058-44d4-bd02-796ad6d23278 
+spec: 
+  clusterIP: 10.96.24.47 
+  clusterIPs: 
+  - 10.96.24.47 
+  externalTrafficPolicy: Cluster 
+  internalTrafficPolicy: Cluster 
+  ipFamilies: 
+  - IPv4 
+  ipFamilyPolicy: SingleStack 
+  ports: 
+  - **nodePort: 32000** 
+    port: 80 
+    protocol: TCP 
+    targetPort: 80 
+  selector: 
+    app: nginxsvc 
+  sessionAffinity: None 
+  **type: NodePort**  
+status: 
+  loadBalancer: {} :q!
+  
+  
+
+ Find the node in which application pod is running. 
+$ kubectl get pod -o wide  
+NAME                        READY   STATUS    RESTARTS   AGE     IP           NODE           NOMINATED NODE   READINESS GATES 
+nginxsvc-6f45cc47b4-2qcbb   1/1     Running   0          8m51s   10.244.2.3   kind-worker2   <none>           <none> 
+nginxsvc-6f45cc47b4-6cw7z   1/1     Running   0          9m18s   10.244.1.3   kind-worker    <none>           <none> 
+nginxsvc-6f45cc47b4-l7x4k   1/1     Running   0          8m51s   10.244.1.4   kind-worker    <none>           <none> 
+$  
+
+Access the application using node IP and nodePort. 
+$ curl http://172.18.0.3:32000   (This ip is node IP)
+<!DOCTYPE html> 
+<html> 
+<head> 
+<title>Welcome to nginx!</title> 
+<style> 
+html { color-scheme: light dark; } 
+body { width: 35em; margin: 0 auto; 
+font-family: Tahoma, Verdana, Arial, sans-serif; } 
+</style> 
+</head> 
+<body> 
+<h1>Welcome to nginx!</h1> 
+<p>If you see this page, the nginx web server is successfully installed and 
+working. Further configuration is required.</p> 
+ 
+<p>For online documentation and support please refer to 
+<a href="http://nginx.org/">nginx.org</a>.<br/> 
+Commercial support is available at 
+<a href="http://nginx.com/">nginx.com</a>.</p> 
+ 
+<p><em>Thank you for using nginx.</em></p> 
+</body> 
+</html> 
+$  
+
+Task:16-Completed Santosh,Ajay Talla, Nilayan,DebasishRatnadeep,Omkar,Neerav,Biswaranjan,Pankaj
+
+
+*10Feb2025:
+MidTerm Assessment: Completion Status:Neerav,Senthil G,Debasish, SantoshRatnadeep, vidhyadhar,Sanchitavishnu, Santosh,Omkar,Yogesh,BiswaranjanAtanu,Nilayan, Shivaprasad, Sarthak,Pankaj,Ajay Talla,Sayali
+    
+    
+
+*Storage:
+Task:17
+ StorageClass:
+[root@master murali-21aug]# vim storageclass.yml
+apiVersion: storage.k8s.io/v1 
+kind: StorageClass 
+metadata: 
+  name: localdisk 
+provisioner: kubernetes.io/no-provisioner
+allowVolumeExpansion: true
+
+[root@master murali-21aug]# 
+
+[root@master murali-21aug]#  kubectl create -f storageclass.yml
+[root@master murali-21aug]#   kubectl get sc
+
+Note: this StorageClass is a global object
+
+PersistentVolume:
+    
+[root@master murali-21aug]# vim host-pv.yml 
+kind: PersistentVolume 
+apiVersion: v1 
+metadata: 
+   name: host-pv 
+spec: 
+   storageClassName: localdisk
+   persistentVolumeReclaimPolicy: Recycle 
+   capacity: 
+      storage: 1Gi 
+   accessModes: 
+      - ReadWriteOnce 
+   hostPath: 
+      path: /var/output          ---------------------> host mountpoint 
+------save----- 
+
+[root@master murali-21aug]# kubectl create -f host-pv.yml
+[root@master murali-21aug]# kubectl get pv
+Note:  PV is also a global object - which we can able to access from any namespace (project)
+
+
+Task:17-Completion Status: Santosh,Debasish,Ajay Talla,Nilayan,Ratnadeep,Biswaranjan,Neerav,Pankajsenthil G,vishnu,Yogesh,Omkar,Sanchita
+
+
+*Task:18
+PersistentVolumeClaim(PVC):
+    
+[root@master murali-21aug]# vim host-pvc.yml
+apiVersion: v1 
+kind: PersistentVolumeClaim 
+metadata: 
+   name: host-pvc 
+spec: 
+   storageClassName: localdisk 
+   accessModes: 
+      - ReadWriteOnce 
+   resources: 
+      requests: 
+         storage: 500Mi
+[root@master murali-21aug]# 
+kubectl create -f host-pvc.yml
+kubectl get pvc
+
+Note:  PVC is a namespace specific
+    
+App/Pod Creation using Deployment:
+
+[root@master murali-21aug]# vim deployment-hostpv.yml 
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name: myapps-dep
+  labels:
+    app: myapp
+    type: front-end
+spec:
+  template:
+    metadata:
+      name: myapp-dep-pod
+      labels:
+        app: myapp-dep
+        type: front-end
+    spec:
+      containers:
+      - image: busybox
+        name: busycont
+        command: ['sh', '-c', 'while true; do echo Success! >> /output/success.txt; sleep 5; done'] 
+        volumeMounts:
+        - name: pv-storage
+          mountPath: /output  
+      volumes:
+      - name: pv-storage
+        persistentVolumeClaim:
+          claimName: host-pvc
+  replicas: 1
+  selector:
+    matchLabels:
+      type: front-end
+
+[root@master murali-21aug]#  kubectl create -f deployment-hostpv.yml 
+
+Note: Pod is always a namespace specific
+
+*Verify:
+ From Host:
+     
+[root@node2 output]# cat /var/output/success.txt 
+Success!
+Success!
+
+From the Pod:   
+    
+[root@master ~]# kubectl get pod storage-dep-68b655547b-5m4d9 -o yaml | less
+[root@master ~]# kubectl exec -it storage-dep-68b655547b-5m4d9 -- sh
+/ # cat /output/success.txt 
+Success!
+Success!
+Success!
+Success!
+Success!
+
+Additional commands:
+
+[root@master ~]# kubectl get storage-dep-68b655547b-5m4d9 -o yaml
+[root@master ~]# kubectl get deploy storage-dep -o yaml
+
+
+Task18: Completion Status: Debasish, Santosh,Sanchita,Neerav,Ajay Talla,Pankaj,Ratnadeep,OmkarNilayan,vidhya
+
+
+Task:19
+*DaemonSet:
+Note: Please use your node3 (4th node) as a new node.  Configure all the initial level steps (1-7) and after "kubeadm init phase preflight" Join the node in the cluster. - Please refer Task:5 in the above 
+
+ [root@master~]# kubeadm token create -–print-join-command    
+[root@node3 mnt]# kubeadm join 10.0.7.1:6443 --token xf3lrl.fb7cniz8139fhvwx --discovery-token-ca-cert-hash sha256:1abb0f47f36b68ba0ce1e2373ab30515f87e936e2f334feb643aeee1ed0529f2    
+
+Create a DaemonSet with the below file.  
+Note: Using deployment dry-run you can create with modifications
+[root@master ~]# vim daemonsetUP.yml
+apiVersion: apps/v1
+kind: DaemonSet
+metadata: 
+  name: mydset
+  labels:
+    app: dset-ds
+    type: mydset
+spec:
+  template:
+    metadata:
+      name: mydset-pod
+      labels:
+        app: dset-pod
+        type: mydset
+    spec:
+      containers:
+      - image: nginx
+        name: mydsetcont
+  selector:
+    matchLabels:
+      type: mydset
+
+[root@master ~]# 
+[root@master ~]# kubectl create -f daemonsetUP.yml 
+
+[root@master ~]# kubectl get ds
+NAME     DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR   AGE
+mydset   2         2         2       2            2           <none>          33m
+[root@master ~]# 
+
+Below output shows that 2 different instances are running in 2 different nodes (each node one instance)
+[root@master ~]# kubectl get pod -o wide
+NAME           READY   STATUS    RESTARTS   AGE     IP             NODE                NOMINATED NODE   READINESS GATES
+mydset-gxvw4   1/1     Running   0          34m     192.168.0.6    node2.example.com   <none>           <none>
+mydset-zfz6w   1/1     Running   0          29m     192.168.0.14   node1.example.com   <none>           <none>
+[root@master ~]# 
+
+[root@master ~]# kubectl get pod -o wide| grep mydset
+mydset-87vk6                     1/1     Running   0             5m11s   192.168.0.4   node1   <none>           <none>
+mydset-gs2lh                     1/1     Running   0             5m11s   192.168.0.3   node2   <none>           <none>
+mydset-rb4q9                     1/1     Running   0             2m35s   192.168.0.2   node3   <none>           <none>
+[root@master ~]# 
+
+[root@master ~]# kubectl get ds -o wide
+NAME     DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR   AGE     CONTAINERS   IMAGES   SELECTOR
+mydset   3         3         3       3            3           <none>          9m30s   mydsetcont   nginx    type=mydset
+[root@master ~]# 
+
+
+*Task:19:CompletionStatus: Debasish, Santosh,Nilayan,Ratnadeep,Ajay Talla,Neerav,Pankaj,vidhyadhar,Vishnu,senthil G,Sanchita,Omkar,Biswaranjan
+
+
+
+Task:20
+*Limits/Resources:
+    
+    Create deployment and assign limits and requests:    
+
+	[root@master ~]# vim resdeploy.yml
+	apiVersion: apps/v1
+	kind: Deployment
+	metadata:
+	  creationTimestamp: null
+	  labels:
+	    app: resdeploy
+	  name: resdeploy
+	spec:
+	  replicas: 1
+	  selector:
+	    matchLabels:
+	      app: resdeploy
+	  strategy: {}
+	  template:
+	    metadata:
+	      creationTimestamp: null
+	      labels:
+	        app: resdeploy
+	    spec:
+	      containers:
+	      - image: nginx
+	        name: nginx
+	        resources: 
+	          limits:
+	            cpu: 200m
+	            memory: 200Mi
+	          requests:
+	            cpu: 100m
+	            memory: 100Mi
+	status: {}
+	[root@master ~]# 
+	
+    [root@master ~]# kubectl get pod -o wide
+NAME                         READY   STATUS    RESTARTS   AGE   IP            NODE                NOMINATED NODE   READINESS GATES
+resdeploy-79b575988b-vtvc4   1/1     Running   0          18m   192.168.0.4   node2.example.com   <none>           <none>
+[root@master ~]# 
+
+Change the values in requests/limits:
+
+[root@master ~]# vim resdeploy.yml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: resdeploy
+  name: resdeploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: resdeploy
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: resdeploy
+    spec:
+      containers:
+      - image: nginx
+        name: nginx
+        resources: 
+          limits:
+            cpu: 200m
+            memory: 200Gi
+          requests:
+            cpu: 100m
+            memory: 100Gi
+status: {}
+[root@master ~]# 
+
+[root@master ~]# kubectl get pod 
+NAME                         READY   STATUS    RESTARTS   AGE
+resdeploy-86bcb759c5-xpjfc   0/1     Pending   0          2s
+[root@master ~]# 
+
+[root@master ~]# kubectl get events | grep resdeploy-86bcb759c5-xpjfc
+42s         Warning   FailedScheduling         pod/resdeploy-86bcb759c5-xpjfc    0/3 nodes are available: 1 node(s) had untolerated taint {node-role.kubernetes.io/control-plane: }, 2 Insufficient memory. preemption: 0/3 nodes are available: 1 Preemption is not helpful for scheduling, 2 No preemption victims found for incoming pod.
+[root@master ~]# 
+
+Now change back to original values and find the status:
+
+	[root@master ~]# vim resdeploy.yml
+	apiVersion: apps/v1
+	kind: Deployment
+	metadata:
+	  creationTimestamp: null
+	  labels:
+	    app: resdeploy
+	  name: resdeploy
+	spec:
+	  replicas: 1
+	  selector:
+	    matchLabels:
+	      app: resdeploy
+	  strategy: {}
+	  template:
+	    metadata:
+	      creationTimestamp: null
+	      labels:
+	        app: resdeploy
+	    spec:
+	      containers:
+	      - image: nginx
+	        name: nginx
+	        resources: 
+	          limits:
+	            cpu: 200m
+	            memory: 200Mi
+	          requests:
+	            cpu: 100m
+	            memory: 100Mi
+	status: {}
+	[root@master ~]# 
+	
+    [root@master ~]# kubectl get pod -o wide
+NAME                         READY   STATUS    RESTARTS   AGE   IP            NODE                NOMINATED NODE   READINESS GATES
+resdeploy-79b575988b-vtvc4   1/1     Running   0          18m   192.168.0.4   node2.example.com   <none>           <none>
+[root@master ~]# 
+
+[root@master ~]# kubectl describe node node2
+Name:               node2.example.com
+Roles:              <none>
+Labels:             beta.kubernetes.io/arch=amd64
+                    beta.kubernetes.io/os=linux
+                    kubernetes.io/arch=amd64
+                    kubernetes.io/hostname=node2.example.com
+                    kubernetes.io/os=linux
+Annotations:        flannel.alpha.coreos.com/backend-data: {"VNI":1,"VtepMAC":"1a:86:a4:20:a0:f5"}
+                    flannel.alpha.coreos.com/backend-type: vxlan
+                    flannel.alpha.coreos.com/kube-subnet-manager: true
+                    flannel.alpha.coreos.com/public-ip: 10.0.11.103
+                    kubeadm.alpha.kubernetes.io/cri-socket: unix:///var/run/containerd/containerd.sock
+                    node.alpha.kubernetes.io/ttl: 0
+                    volumes.kubernetes.io/controller-managed-attach-detach: true
+CreationTimestamp:  Tue, 20 Aug 2024 22:46:14 +0530
+Taints:             <none>
+Unschedulable:      false
+Lease:
+  HolderIdentity:  node2.example.com
+  AcquireTime:     <unset>
+  RenewTime:       Thu, 22 Aug 2024 10:28:42 +0530
+......
+Addresses:
+  InternalIP:  10.0.11.103
+  Hostname:    node2.example.com
+Capacity:
+  cpu:                2
+  ephemeral-storage:  64157076Ki
+  hugepages-1Gi:      0
+  hugepages-2Mi:      0
+  memory:             7882440Ki
+  pods:               110
+Allocatable:
+  cpu:                2
+  ephemeral-storage:  59127161144
+  hugepages-1Gi:      0
+  hugepages-2Mi:      0
+  memory:             7780040Ki
+  pods:               110
+System Info:
+  Machine ID:                 208eb4086c764575b018e1a1e227670d
+  System UUID:                b2090842-45fa-d9d0-8017-c0b380dc5d49
+  Boot ID:                    6ee665d7-f230-413b-9525-a13b2b777c9e
+  Kernel Version:             4.18.0-553.el8_10.x86_64
+  OS Image:                   Rocky Linux 8.10 (Green Obsidian)
+  Operating System:           linux
+  Architecture:               amd64
+  Container Runtime Version:  containerd://1.6.10
+  Kubelet Version:            v1.29.8
+  Kube-Proxy Version:         v1.29.8
+PodCIDR:                      192.168.0.0/24
+PodCIDRs:                     192.168.0.0/24
+Non-terminated Pods:          (4 in total)
+  Namespace                   Name                           CPU Requests  CPU Limits  Memory Requests  Memory Limits  Age
+  ---------                   ----                           ------------  ----------  ---------------  -------------  ---
+  classwork                   resdeploy-79b575988b-9hmwr     100m (5%)     200m (10%)  100Mi (1%)       200Mi (2%)     14s
+  kube-flannel                kube-flannel-ds-tglvz          100m (5%)     0 (0%)      50Mi (0%)        0 (0%)         35h
+  kube-system                 fluentd-elasticsearch-xrmz9    100m (5%)     0 (0%)      200Mi (2%)       200Mi (2%)     35h
+  kube-system                 kube-proxy-28bgv               0 (0%)        0 (0%)      0 (0%)           0 (0%)         35h
+==============
+$ kubectl create deploy resdeploy  --image=nginx --dry-run=client -o yaml > resdeploy.yml
+
+
+Task20 Completed: Debasish,Vishnu,Ajay Talla,Ratnadeep, Santosh,Pankaj,SanchitaNilayan,Omkar,Neerav, 
+
+
+*12Feb2025:
+Task:21
+Role and Rolebindings:
+
+[root@master ~]# vim role.yml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: myrole
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["list","get","create","update","delete"]
+
+
+[root@master ~]# kubectl create -f role.yml
+role.rbac.authorization.k8s.io/myrole created
+[root@master ~]# kubectl get role
+NAME     CREATED AT
+myrole   2025-02-12T04:00:13Z
+[root@master ~]# kubectl get role -o yaml
+apiVersion: v1
+items:
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: Role
+  metadata:
+    creationTimestamp: "2025-02-12T04:00:13Z"
+    name: myrole
+    namespace: proja
+    resourceVersion: "449578"
+    uid: 192695b0-f57a-4fc7-9c81-f92386d7e56b
+  rules:
+  - apiGroups:
+    - ""
+    resources:
+    - pods
+    verbs:
+    - list
+    - get
+    - create
+    - update
+    - delete
+kind: List
+metadata:
+  resourceVersion: ""
+[root@master ~]# 
+        
+RoleBinding:
+
+[root@master ~]# vim rolebinding.yml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: myrole-binding
+subjects:
+- kind: User
+  name: dev-user
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: Role
+  name: myrole
+  apiGroup: rbac.authorization.k8s.io
+
+[root@master ~]# kubectl create -f rolebinding.yml
+[root@master ~]# kubectl create -f rolebinding.yml
+rolebinding.rbac.authorization.k8s.io/myrole-binding created
+[root@master ~]# kubectl get rolebinding
+NAME             ROLE          AGE
+myrole-binding   Role/myrole   7s
+[root@master ~]# kubectl get role
+NAME     CREATED AT
+myrole   2025-02-12T04:00:13Z
+[root@master ~]# kubectl get rolebinding myrole-binding -o yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  creationTimestamp: "2025-02-12T04:04:33Z"
+  name: myrole-binding
+  namespace: proja
+  resourceVersion: "449967"
+  uid: ecdcc976-53f7-4def-9a57-53c7f13696c1
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: myrole
+subjects:
+- apiGroup: rbac.authorization.k8s.io
+  kind: User
+  name: dev-user
+[root@master ~]# kubectl describe role myrole
+Name:         myrole
+Labels:       <none>
+Annotations:  <none>
+PolicyRule:
+  Resources  Non-Resource URLs  Resource Names  Verbs
+  ---------  -----------------  --------------  -----
+  pods       []                 []              [list get create update delete]
+[root@master ~]# kubectl describe rolebinding myrole-biding
+Error from server (NotFound): rolebindings.rbac.authorization.k8s.io "myrole-biding" not found
+[root@master ~]# kubectl describe rolebinding myrole-binding
+Name:         myrole-binding
+Labels:       <none>
+Annotations:  <none>
+Role:
+  Kind:  Role
+  Name:  myrole
+Subjects:
+  Kind  Name      Namespace
+  ----  ----      ---------
+  User  dev-user  
+[root@master ~]#        
+       
+       
+ Task:21: CompletionStatus: Santosh,Ajay Talla,Vishnu,Sanchita,Nilayan,Ipsita,Omkar,Ratnadeep,Neerav,Pankaj,Biswaranjan,vidhyadhar,Debasish
+
+Task:22
+*Minikube Install:         
+ 
+ node3 # vim /etc/hosts    
+     ---------entry here--------
+# dnf config-manager --add-repo=https://download.docker.com/linux/centos/docker-ce.repo
+If you get any error says not able to resolv... then check your /etc/resolv.conf
+
+#vim /etc/resolv.conf
+search example.com
+nameserver  8.8.8.8
+-----save----
+
+# dnf repolist
+# dnf install docker-ce docker-ce-cli containerd.io -y
+It throws some conflict issue.....
+Known issue: 
+#yum remove -y runc*  --> to remove runc* packages
+ 
+ # dnf install docker-ce docker-ce-cli containerd.io -y
+ 
+# systemctl enable docker
+# systemctl start docker
+# usermod -aG docker $USER
+# newgrp docker
+# curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+# cp kubectl /usr/local/bin/ && sudo chmod +x /usr/local/bin/kubectl
+# kubectl version --client
+# curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+# sudo install minikube-linux-amd64 /usr/local/bin/minikube
+# minikube start --driver docker  --force
+#minikube status
+# kubectl cluster-info
+# kubectl get nodes
+
+# kubectl create deployment test-minikube --image=k8s.gcr.io/echoserver:1.10 
+deployment.apps/test-minikube created
+# kubectl get deploy
+# kubectl get pod -o wide
+
+
+Task:22: CompletionStatus: Vishnu, Sanchita, Ratnadeep, Santosh,Omkar,Ajay Talla,Nilayan,Ipsita,Biswaranjan,vidhyadhar,Neerav,Debasish
+
+
+*Helm Charts Install:
+   ======================================================== 
+    https://helm.sh/docs/intro/install/       ----> open a browser in the 4th node and access this url.
+    Download and use the binary as per the above link
+
+    #cd /root/Downloads
+    #ls 
+    #tar  xvfz helm-3.15.......tar.gz
+    #cd linux-amd64
+    #cp helm /usr/local/bin
+    #helm
+    ...======================================================
+        
+*  $ helm repo add bitnami https://charts.bitnami.com/bitnami
+	 $ helm search repo bitnami
+	 $ helm repo update              
+	 
+	 $ helm list
+* 
+Helhelm list
+m Charts:
+    
+    https://helm.sh/docs/intro/install/
+    
+      $ helm search repo bitnami
+*  $ helm repo add bitnami https://charts.bitnami.com/bitnami
+	
+     $ helm repo update              
+	 
+     $ helm install bitnami/mysql --generate-name
+	
+	$ helm list
+	
+	
+	
+Installing Prometheus and followed by Grafanna:
+
+What is prometheus?
+https://prometheus.io/docs/introduction/overview/
+
+Task15: 
+    Installing Prometheus and Grafanna
+
+*Installing Prometheus:
+# helm search repo bitnami
+Add helm repo
+*helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+*
+*Update helm repo
+*helm repo update
+*
+*Install helm
+*# helm install prometheus prometheus-community/prometheus
+*
+kubectl get pod
+kubectl get all
+kubectl get pv
+kubectl get pvc
+
+*Expose Prometheus Service
+*This is required to access prometheus-server using your browser.
+*
+*#kubectl expose service prometheus-server --type=NodePort --target-port=9090 --name=prometheus-server-ext
+#kubectl get svc
+
+Using "minikube ip" and get the ip address and add the port using above "kubectl get svc" command 
+Now prometheus UI will be opened
+----==========================================================End=========================
+*Installing Grafanna using Helm Charts:
+    
+*Add helm repo
+*helm repo add grafana https://grafana.github.io/helm-charts
+*
+*Update helm repo
+*helm repo update
+*
+*Install helm
+*helm install grafana grafana/grafana
+
+Once instllation is completed, you need to execute the below command: to get the password for the admin user:
+    
+    #kubectl get secret --namespace default grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo 
+    
+*Expose Grafana Service
+*#kubectl expose service grafana --type=NodePort --target-port=3000 --name=grafana-ext
+#kubectl get svc
+
+With "minikube ip " along with the port number (take it from "kubectl get svc"), using browser, get the UI
+
+using "admin" user and with the password, login.
+Goto "Data Source" - click and see the options.  Normally have multiple data sources.  Select Prometheus 
+Where in "Prometheus server URL" section, enter the http://IPAddress:Port - which you have entered to create prometheus UI 
+select Save and Test
+
+
+But, click left side 4squares option  -> select -> Dashboard -> select "Create Dashboard" -> then select "import dashboard" ->  
+
+enter "3662" (this is ID number where pre-created template is available) -> as you click on the "Load" button, you can see prometheus is loaded. ...
+Also on the bottom select "prometheus" on the prometheus tab...then click "Import"
+
+Now you can able to see the Dashboards...
+
+
+
+Task:23-Completion Status: Ajay Talla, Santosh, Vishnu,Pankaj,Neerav, Sanchita,Omkar,DebasishRatnadeep
+
+=====END=======
+
+*Node Maintenance:
+
+[root@master ~]# kubectl get nodes
+NAME     STATUS     ROLES           AGE   VERSION
+master   Ready      control-plane   9d    v1.29.13
+node1    Ready      <none>          9d    v1.29.13
+node2    Ready      <none>          8d    v1.29.13
+node3    NotReady   <none>          27h   v1.29.13
+[root@master ~]# kubectl cordon node2
+node/node2 cordoned
+[root@master ~]# kubectl get nodes
+NAME     STATUS                     ROLES           AGE   VERSION
+master   Ready                      control-plane   9d    v1.29.13
+node1    Ready                      <none>          9d    v1.29.13
+node2    Ready,SchedulingDisabled   <none>          8d    v1.29.13
+node3    NotReady                   <none>          27h   v1.29.13
+[root@master ~]# kubectl get pod -o wide
+NAME                             READY   STATUS        RESTARTS      AGE    IP            NODE    NOMINATED NODE   READINESS GATES
+mydset-m6nsk                     1/1     Running       1 (11h ago)   27h    192.168.0.3   node2   <none>           <none>
+mydset-pjjpt                     1/1     Running       1 (11h ago)   27h    192.168.0.3   node1   <none>           <none>
+mydset-r4hh8                     1/1     Running       1 (10h ago)   27h    192.168.0.2   node3   <none>           <none>
+mystorage-dep-68b655547b-8fml7   1/1     Running       2 (11h ago)   2d2h   192.168.0.2   node1   <none>           <none>
+nginxsvc-69b846bcff-lhc6c        1/1     Running       5 (11h ago)   5d2h   192.168.0.4   node1   <none>           <none>
+nginxsvc2-69b846bcff-t4fp8       1/1     Running       5 (11h ago)   5d2h   192.168.0.2   node2   <none>           <none>
+resdeploy-79b575988b-9tsft       1/1     Terminating   1 (10h ago)   26h    192.168.0.3   node3   <none>           <none>
+resdeploy-79b575988b-zkhnn       1/1     Running       0             8h     192.168.0.4   node2   <none>           <none>
+[root@master ~]# kubectl drain node2
+node/node2 already cordoned
+error: unable to drain node "node2" due to error:cannot delete DaemonSet-managed Pods (use --ignore-daemonsets to ignore): default/mydset-m6nsk, kube-flannel/kube-flannel-ds-77ckh, kube-system/kube-proxy-g4nmz, continuing command...
+There are pending nodes to be drained:
+ node2
+cannot delete DaemonSet-managed Pods (use --ignore-daemonsets to ignore): default/mydset-m6nsk, kube-flannel/kube-flannel-ds-77ckh, kube-system/kube-proxy-g4nmz
+[root@master ~]# kubectl drain node2 --ignore-daemonsets
+node/node2 already cordoned
+Warning: ignoring DaemonSet-managed Pods: default/mydset-m6nsk, kube-flannel/kube-flannel-ds-77ckh, kube-system/kube-proxy-g4nmz
+evicting pod default/resdeploy-79b575988b-zkhnn
+evicting pod default/nginxsvc2-69b846bcff-t4fp8
+pod/nginxsvc2-69b846bcff-t4fp8 evicted
+pod/resdeploy-79b575988b-zkhnn evicted
+node/node2 drained
+[root@master ~]# kubectl get pod -o wide
+NAME                             READY   STATUS        RESTARTS      AGE    IP            NODE    NOMINATED NODE   READINESS GATES
+mydset-m6nsk                     1/1     Running       1 (11h ago)   27h    192.168.0.3   node2   <none>           <none>
+mydset-pjjpt                     1/1     Running       1 (11h ago)   27h    192.168.0.3   node1   <none>           <none>
+mydset-r4hh8                     1/1     Running       1 (10h ago)   27h    192.168.0.2   node3   <none>           <none>
+mystorage-dep-68b655547b-8fml7   1/1     Running       2 (11h ago)   2d2h   192.168.0.2   node1   <none>           <none>
+nginxsvc-69b846bcff-lhc6c        1/1     Running       5 (11h ago)   5d2h   192.168.0.4   node1   <none>           <none>
+nginxsvc2-69b846bcff-96jj5       1/1     Running       0             6s     192.168.0.5   node1   <none>           <none>
+resdeploy-79b575988b-9tsft       1/1     Terminating   1 (10h ago)   26h    192.168.0.3   node3   <none>           <none>
+resdeploy-79b575988b-blltp       1/1     Running       0             6s     192.168.0.6   node1   <none>           <none>
+[root@master ~]# kubectl get nodes
+NAME     STATUS                     ROLES           AGE   VERSION
+master   Ready                      control-plane   9d    v1.29.13
+node1    Ready                      <none>          9d    v1.29.13
+node2    Ready,SchedulingDisabled   <none>          9d    v1.29.13
+node3    NotReady                   <none>          27h   v1.29.13
+[root@master ~]# kubectl uncordon node2
+node/node2 uncordoned
+[root@master ~]# kubectl get nodes
+NAME     STATUS     ROLES           AGE   VERSION
+master   Ready      control-plane   9d    v1.29.13
+node1    Ready      <none>          9d    v1.29.13
+node2    Ready      <none>          9d    v1.29.13
+node3    NotReady   <none>          27h   v1.29.13
+[root@master ~]# 
+
+
+Debasish,Sanchita
+
+
+
+*13Feb25:
+Task:24
+Ansible Lab Setup:
+
+[root@node1 ~]# useradd devops
+[root@node1 ~]# passwd devops
+Changing password for user devops.
+New password:  redhat
+BAD PASSWORD: The password is shorter than 8 characters
+Retype new password:  redhat
+passwd: all authentication tokens updated successfully.
+[root@node1 ~]# 
+
+
+[root@node2 ~]# useradd devops
+[root@node2 ~]# passwd devops
+Changing password for user devops.
+New password: redhat
+BAD PASSWORD: The password is shorter than 8 characters
+Retype new password: redhat
+passwd: all authentication tokens updated successfully.
+[root@node2 ~]# 
+[root@node2 ~]# 
+    
+ From Master:   (Manual checking)
+[root@master ~]# su - student
+[student@master ~]$ ssh devops@node1
+The authenticity of host 'node1 (10.0.15.2)' can't be established.
+ECDSA key fingerprint is SHA256:8m2nv4YWa2L4PtCNS9nSGfTEHHELQpuvK6uwBfabJQo.
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+Warning: Permanently added 'node1,10.0.15.2' (ECDSA) to the list of known hosts.
+devops@node1's password: 
+Activate the web console with: systemctl enable --now cockpit.socket
+
+[devops@node1 ~]$ exit
+logout
+Connection to node1 closed.
+[student@master ~]$ ssh devops@node2
+The authenticity of host 'node2 (10.0.15.3)' can't be established.
+ECDSA key fingerprint is SHA256:YYK8MZuxTKabKVnD2IP6YVOg5Z1iRrxIGkEbRzu7pL4.
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+Warning: Permanently added 'node2,10.0.15.3' (ECDSA) to the list of known hosts.
+devops@node2's password: 
+Activate the web console with: systemctl enable --now cockpit.socket
+
+[devops@node2 ~]$ exit
+logout
+Connection to node2 closed.
+[student@master ~]$ 
+
+Passwordless Auth:
+
+[student@master ~]$ ssh-keygen 
+Generating public/private rsa key pair.
+
+Enter file in which to save the key (/home/student/.ssh/id_rsa): Enter passphrase (empty for no passphrase): 
+Enter same passphrase again: 
+Your identification has been saved in /home/student/.ssh/id_rsa.
+Your public key has been saved in /home/student/.ssh/id_rsa.pub.
+The key fingerprint is:
+SHA256:I73BmiqdKlXLcinnGs+HtRzZcgAWQeKeb5Z1zNcUAX4 student@master
+The key's randomart image is:
++---[RSA 3072]----+
+|  ..+o    ..o.   |
+| . .o    .   .   |
+|  .. .    . E    |
+| . .. .=   +     |
+|  oo oo+S . .    |
+|  +.*o==o=       |
+| ..B==o=.        |
+|. .*=.+          |
+| .o++.           |
++----[SHA256]-----+
+[student@master ~]$ ssh-copy-id devops@node1
+/usr/bin/ssh-copy-id: INFO: Source of key(s) to be installed: "/home/student/.ssh/id_rsa.pub"
+/usr/bin/ssh-copy-id: INFO: attempting to log in with the new key(s), to filter out any that are already installed
+/usr/bin/ssh-copy-id: INFO: 1 key(s) remain to be installed -- if you are prompted now it is to install the new keys
+devops@node1's password: redhat
+
+Number of key(s) added: 1
+
+Now try logging into the machine, with:   "ssh 'devops@node1'"
+and check to make sure that only the key(s) you wanted were added.
+
+[student@master ~]$ ssh-copy-id devops@node2
+/usr/bin/ssh-copy-id: INFO: Source of key(s) to be installed: "/home/student/.ssh/id_rsa.pub"
+/usr/bin/ssh-copy-id: INFO: attempting to log in with the new key(s), to filter out any that are already installed
+/usr/bin/ssh-copy-id: INFO: 1 key(s) remain to be installed -- if you are prompted now it is to install the new keys
+devops@node2's password: redhat
+
+Number of key(s) added: 1
+
+Now try logging into the machine, with:   "ssh 'devops@node2'"
+and check to make sure that only the key(s) you wanted were added.
+
+[student@master ~]$ ssh devops@node1
+Activate the web console with: systemctl enable --now cockpit.socket
+
+Last login: Thu Feb 13 14:35:45 2025 from 10.0.15.1
+[devops@node1 ~]$ exit
+logout
+Connection to node1 closed.
+[student@master ~]$ ssh devops@node2
+Activate the web console with: systemctl enable --now cockpit.socket
+
+Last login: Thu Feb 13 14:35:59 2025 from 10.0.15.1
+[devops@node2 ~]$ exit
+logout
+Connection to node2 closed.
+[student@master ~]$ 
+
+Task:24-CompletionStatus: Debasish,SantoshVishnu,Ajay Talla,Nilayan,Pankaj,Ratnadeep,Thamizh,Ipsita,Senthil G,Neerav,Biswaranjan,Omkar,Yogesh,Shridhar, Shivaprasad, Sanchita
+
+Task:25
+Sudoers
+
+[root@node1 sudo
+/etc/sudoers.d
+[root@node1 sudoers.d]# vim devops
+#username     #hostname      #commandname
+devops        ALL=(ALL)       NOPASSWD: ALL
+[root@node1 sudoers.d]# 
+
+[root@node2 sudoers.d]# cd /etc/sudoers.d/
+/etc/sudoers.d
+[root@node2 sudoers.d]# vim devops 
+devops    ALL=(ALL)    NOPASSWD: ALL
+[root@node2 sudoers.d]# 
+
+
+From Master Test:
+ [student@master ~]$ ssh devops@node1 -C "sudo useradd u21"
+[student@master ~]$ 
+
+Then on Worker Nodes
+cat /etc/passwd | tail -1
+
+
+Task25:Completed Status:Debasish,Vishnu, Santosh,Ajay Talla,Ratnadeep,Biswaranjan,Nilayan,Ipsita,Neerav,Senthil G,Omkar,Pankaj,Shridhar, Shivaprasad,Yogesh,Sanchita
+
+Task26
+Ansible Install
+
+[root@master ~]# yum install ansible -y
+Last metadata expiration check: 0:48:25 ago on Thursday 13 February 2025 03:01:02 PM IST.
+Dependencies resolved.
+=======================================================================================================
+ Package                          Architecture    Version                     Repository          Size
+=======================================================================================================
+Installing:
+ ansible                          noarch          9.2.0-1.el8                 epel                46 M
+Installing dependencies:
+ ansible-core                     x86_64          2.16.3-2.el8                appstream          3.6 M
+ git-core                         x86_64          2.43.5-2.el8_10             appstream           11 M
+ mpdecimal                        x86_64          2.5.1-3.el8                 appstream           92 k
+ python3.12                       x86_64          3.12.8-1.el8_10             appstream           29 k
+ python3.12-cffi                  x86_64          1.16.0-2.el8                appstream          298 k
+ python3.12-cryptography          x86_64          41.0.7-1.el8                appstream          1.2 M
+ python3.12-libs                  x86_64          3.12.8-1.el8_10             appstream           10 M
+ python3.12-pip-wheel             noarch          23.2.1-4.el8                appstream          1.5 M
+ python3.12-ply                   noarch          3.11-2.el8                  appstream          133 k
+ python3.12-pycparser             noarch          2.20-2.el8                  appstream          144 k
+ python3.12-pyyaml                x86_64          6.0.1-2.el8                 appstream          202 k
+ sshpass                          x86_64          1.09-4.el8                  appstream           29 k
+Installing weak dependencies:
+ python3-jmespath                 noarch          0.9.0-11.el8                appstream           44 k
+
+Transaction Summary
+=======================================================================================================
+Install  14 Packages
+
+Total download size: 75 M
+Installed size: 560 M
+Downloading Packages:
+(1/14): mpdecimal-2.5.1-3.el8.x86_64.rpm                               295 kB/s |  92 kB     00:00    
+(2/14): python3-jmespath-0.9.0-11.el8.noarch.rpm                       780 kB/s |  44 kB     00:00    
+(3/14): python3.12-3.12.8-1.el8_10.x86_64.rpm                          545 kB/s |  29 kB     00:00    
+(4/14): ansible-core-2.16.3-2.el8.x86_64.rpm                           7.3 MB/s | 3.6 MB     00:00    
+(5/14): python3.12-cffi-1.16.0-2.el8.x86_64.rpm                        2.2 MB/s | 298 kB     00:00    
+(6/14): python3.12-cryptography-41.0.7-1.el8.x86_64.rpm                8.3 MB/s | 1.2 MB     00:00    
+(7/14): python3.12-pip-wheel-23.2.1-4.el8.noarch.rpm                   4.8 MB/s | 1.5 MB     00:00    
+(8/14): python3.12-ply-3.11-2.el8.noarch.rpm                           2.6 MB/s | 133 kB     00:00    
+(9/14): git-core-2.43.5-2.el8_10.x86_64.rpm                            9.8 MB/s |  11 MB     00:01    
+(10/14): python3.12-pycparser-2.20-2.el8.noarch.rpm                    1.0 MB/s | 144 kB     00:00    
+(11/14): python3.12-pyyaml-6.0.1-2.el8.x86_64.rpm                      3.7 MB/s | 202 kB     00:00    
+(12/14): sshpass-1.09-4.el8.x86_64.rpm                                 458 kB/s |  29 kB     00:00    
+(13/14): python3.12-libs-3.12.8-1.el8_10.x86_64.rpm                     13 MB/s |  10 MB     00:00    
+(14/14): ansible-9.2.0-1.el8.noarch.rpm                                 16 MB/s |  46 MB     00:02    
+-------------------------------------------------------------------------------------------------------
+Total                                                                   11 MB/s |  75 MB     00:06     
+Running transaction check
+Transaction check succeeded.
+Running transaction test
+Transaction test succeeded.
+Running transaction
+  Preparing        :                                                                               1/1 
+  Installing       : sshpass-1.09-4.el8.x86_64                                                    1/14 
+  Installing       : python3.12-pip-wheel-23.2.1-4.el8.noarch                                     2/14 
+  Installing       : python3-jmespath-0.9.0-11.el8.noarch                                         3/14 
+  Installing       : mpdecimal-2.5.1-3.el8.x86_64                                                 4/14 
+  Installing       : python3.12-3.12.8-1.el8_10.x86_64                                            5/14 
+  Running scriptlet: python3.12-3.12.8-1.el8_10.x86_64                                            5/14 
+  Installing       : python3.12-libs-3.12.8-1.el8_10.x86_64                                       6/14 
+  Installing       : python3.12-ply-3.11-2.el8.noarch                                             7/14 
+  Installing       : python3.12-pycparser-2.20-2.el8.noarch                                       8/14 
+  Installing       : python3.12-cffi-1.16.0-2.el8.x86_64                                          9/14 
+  Installing       : python3.12-cryptography-41.0.7-1.el8.x86_64                                 10/14 
+  Installing       : python3.12-pyyaml-6.0.1-2.el8.x86_64                                        11/14 
+  Installing       : git-core-2.43.5-2.el8_10.x86_64                                             12/14 
+  Installing       : ansible-core-2.16.3-2.el8.x86_64                                            13/14 
+  Installing       : ansible-9.2.0-1.el8.noarch                                                  14/14 
+  Running scriptlet: ansible-9.2.0-1.el8.noarch                                                  14/14 
+  Verifying        : ansible-core-2.16.3-2.el8.x86_64                                             1/14 
+  Verifying        : git-core-2.43.5-2.el8_10.x86_64                                              2/14 
+  Verifying        : mpdecimal-2.5.1-3.el8.x86_64                                                 3/14 
+  Verifying        : python3-jmespath-0.9.0-11.el8.noarch                                         4/14 
+  Verifying        : python3.12-3.12.8-1.el8_10.x86_64                                            5/14 
+  Verifying        : python3.12-cffi-1.16.0-2.el8.x86_64                                          6/14 
+  Verifying        : python3.12-cryptography-41.0.7-1.el8.x86_64                                  7/14 
+  Verifying        : python3.12-libs-3.12.8-1.el8_10.x86_64                                       8/14 
+  Verifying        : python3.12-pip-wheel-23.2.1-4.el8.noarch                                     9/14 
+  Verifying        : python3.12-ply-3.11-2.el8.noarch                                            10/14 
+  Verifying        : python3.12-pycparser-2.20-2.el8.noarch                                      11/14 
+  Verifying        : python3.12-pyyaml-6.0.1-2.el8.x86_64                                        12/14 
+  Verifying        : sshpass-1.09-4.el8.x86_64                                                   13/14 
+  Verifying        : ansible-9.2.0-1.el8.noarch                                                  14/14 
+
+Installed:
+  ansible-9.2.0-1.el8.noarch                      ansible-core-2.16.3-2.el8.x86_64                    
+  git-core-2.43.5-2.el8_10.x86_64                 mpdecimal-2.5.1-3.el8.x86_64                        
+  python3-jmespath-0.9.0-11.el8.noarch            python3.12-3.12.8-1.el8_10.x86_64                   
+  python3.12-cffi-1.16.0-2.el8.x86_64             python3.12-cryptography-41.0.7-1.el8.x86_64         
+  python3.12-libs-3.12.8-1.el8_10.x86_64          python3.12-pip-wheel-23.2.1-4.el8.noarch            
+  python3.12-ply-3.11-2.el8.noarch                python3.12-pycparser-2.20-2.el8.noarch              
+  python3.12-pyyaml-6.0.1-2.el8.x86_64            sshpass-1.09-4.el8.x86_64                           
+
+Complete!
+[root@master ~]# ansible --version
+ansible [core 2.16.3]
+  config file = /etc/ansible/ansible.cfg
+  configured module search path = ['/root/.ansible/plugins/modules', '/usr/share/ansible/plugins/modules']
+  ansible python module location = /usr/lib/python3.12/site-packages/ansible
+  ansible collection location = /root/.ansible/collections:/usr/share/ansible/collections
+  executable location = /bin/ansible
+  python version = 3.12.8 (main, Dec 12 2024, 16:30:29) [GCC 8.5.0 20210514 (Red Hat 8.5.0-22)] (/usr/bin/python3.12)
+  jinja version = 3.1.2
+  libyaml = True
+[root@master ~]# 
+
+
+Task26: CompletionStatus: Ajay Talla,Debasish,Ipsita,Neerav,shridhar,Pankaj,OmkarRatnadeep,YogeshSenthil G, Santosh,Nilayan,Biswaranjan, Shivaprasadvishnu,Sanchita
+
+
+Task:27
+Ansible Configuration:
+    
+[student@master ~]$ ansible --version
+ansible [core 2.16.3]
+  config file = /etc/ansible/ansible.cfg
+  configured module search path = ['/home/student/.ansible/plugins/modules', '/usr/share/ansible/plugins/modules']
+  ansible python module location = /usr/lib/python3.12/site-packages/ansible
+  ansible collection location = /home/student/.ansible/collections:/usr/share/ansible/collections
+  executable location = /usr/bin/ansible
+  python version = 3.12.8 (main, Dec 12 2024, 16:30:29) [GCC 8.5.0 20210514 (Red Hat 8.5.0-22)] (/usr/bin/python3.12)
+  jinja version = 3.1.2
+  libyaml = True
+[student@master ~]$ touch ansible.cfg
+[student@master ~]$ ansible --version
+ansible [core 2.16.3]
+  config file = /home/student/ansible.cfg
+  configured module search path = ['/home/student/.ansible/plugins/modules', '/usr/share/ansible/plugins/modules']
+  ansible python module location = /usr/lib/python3.12/site-packages/ansible
+  ansible collection location = /home/student/.ansible/collections:/usr/share/ansible/collections
+  executable location = /usr/bin/ansible
+  python version = 3.12.8 (main, Dec 12 2024, 16:30:29) [GCC 8.5.0 20210514 (Red Hat 8.5.0-22)] (/usr/bin/python3.12)
+  jinja version = 3.1.2
+  libyaml = True
+[student@master ~]$
+
+[student@master ~]$ vim ansible.cfg
+[defaults]
+inventory=/home/student/inventory
+[student@master ~]$ 
+
+[student@master ~]$ vim inventory 
+[webserver]
+node1
+[dbserver]
+node2
+[student@master ~]$ 
+
+Verfying:
+[student@master ~]$ ansible node1 --list-hosts
+  hosts (1):
+    node1
+[student@master ~]$ ansible node2 --list-hosts
+  hosts (1):
+    node2
+[student@master ~]$ ansible webserver --list-hosts
+  hosts (1):
+    node1
+[student@master ~]$ ansible dbserver --list-hosts
+  hosts (1):
+    node2
+[student@master ~]$ 
+
+Task:27:
+    CompletionStatus:Ratnadeep,Debasish, Santosh, Vishnu,Ajay Talla,Nilayan,Omkar,Biswaranjan,senthil G,Shridhar,Ipsita,Yogesh,Pankaj,Sanchita.Neerav
+
+
+Task:28
+Privilege_escalation/Adhoc-commands:
+
+[student@master ~]$ ansible -m command -a "hostname" node1 
+node1 | CHANGED | rc=0 >>
+node1
+[student@master ~]$ 
+
+[student@master ~]$ ansible -m user -a "name=u36 state=present" node1
+node1 | FAILED! => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/libexec/platform-python"
+    },
+    "changed": false,
+    "msg": "useradd: Permission denied.\nuseradd: cannot lock /etc/passwd; try again later.\n",
+    "name": "u36",
+    "rc": 1
+}
+[student@master ~]$ vim ansible.cfg 
+[defaults]
+inventory=/home/student/inventory
+remote_user=devops
+
+[privilege_escalation]
+become=True
+become_method=sudo
+become_user=root
+become_ask_pass=False
+[student@master ~]$ 
+
+[student@master ~]$ ansible -m user -a "name=u36 state=present" node1
+node1 | CHANGED => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/libexec/platform-python"
+    },
+    "changed": true,
+    "comment": "",
+    "create_home": true,
+    "group": 1009,
+    "home": "/home/u36",
+    "name": "u36",
+    "shell": "/bin/bash",
+    "state": "present",
+    "system": false,
+    "uid": 1008
+}
+[student@master ~]$ ansible -m user -a "name=u36 state=present" node1
+node1 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/libexec/platform-python"
+    },
+    "append": false,
+    "changed": false,
+    "comment": "",
+    "group": 1009,
+    "home": "/home/u36",
+    "move_home": false,
+    "name": "u36",
+    "shell": "/bin/bash",
+    "state": "present",
+    "uid": 1008
+}
+[student@master ~]$ 
+
+Task28:CompletedStatus: Santosh,Debasish,Thamizh,Senthil G,Ajay Talla,Pankaj,Biswaranjan,vishnu,NilayanIpsita,Shridhar,YogeshRatnadeep,Omkar, Sanchita,Neerav
+
+
+Task:29
+Playbook Execution:
+
+[student@master ~]$ vim myfirstplay.yml
+---
+- name: myfirstplay
+  hosts: node1
+  ignore_errors: yes
+  tasks:
+    - name: my first task
+      user:
+        name: u55
+        state: present
+    - name: my sec task
+      yum:
+        name: httpdaaaa
+        state: latest
+    - name: my 3rd task
+      user:
+        nameuiuuiu: u56
+        state: present 
+    - name: my 4th task
+      user:
+        name: u57
+        state: present 
+[student@master ~]$ 
+
+[student@master ~]$ ansible-playbook myfirstplay.yml
+
+PLAY [myfirstplay] ************************************************************************************
+
+TASK [Gathering Facts] ********************************************************************************
+ok: [node1]
+
+TASK [my first task] **********************************************************************************
+changed: [node1]
+
+TASK [my sec task] ************************************************************************************
+fatal: [node1]: FAILED! => {"changed": false, "failures": ["No package httpdaaaa available."], "msg": "Failed to install some of the specified packages", "rc": 1, "results": []}
+...ignoring
+
+TASK [my 3rd task] ************************************************************************************
+fatal: [node1]: FAILED! => {"changed": false, "msg": "missing required arguments: name"}
+
+PLAY RECAP ********************************************************************************************
+node1                      : ok=3    changed=1    unreachable=0    failed=1    skipped=0    rescued=0    ignored=1   
+
+[student@master ~]$ 
+
+
+
+Task29:CompletedStatus:Omkar,Ajay Talla,Sanchita,Neerav,Santosh
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

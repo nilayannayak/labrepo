@@ -1,0 +1,512 @@
+
+	* DOCKER
+
+	1. docker run -d --name myos registry.access.redhat.com/ubi7 sleep 100       
+	run - would be fetching the checking for the image in the registry and pulling 
+	-d - runs in the background 
+      tail -f /dev/null - runs indefinately 
+
+2. docker inspect myweb2 - 
+	 Inspects container 
+	
+3. docker exec myweb2 cat /etc/resolv.conf 
+	or making changes to the dns part of the container 
+	
+4. docker exec -it myweb2 /bin/bash
+	-it gives a psudo shell into the container 
+	bash-5.1$ cd /var/www/html
+	 bash-5.1$ cat > index.html
+	 Welcome to DevOps!!!
+	 bash-5.1$ curl localhost:8080
+	
+5. docker start myweb2
+		starts container
+		
+6. docker run -d --name myweb3 -p 8090:8080 registry.access.redhat.com/ubi9/httpd-24
+             -p 8090:8080 → Maps port 8080 inside the container to port 8090 on the host  (Port mapping)
+              This means you can access the web server by visiting http://localhost:8090 (or http://your-server-ip:8090). 
+
+7. docker ps  & docker ps -a     
+		ps shows all the podes running 
+		ps -a shows even the pods which have stopped
+		
+8. docker run -d --name myweb4 -p 8091:8080 -v /root/webcontent:/var/www:Z registry.access.redhat.com/ubi9/httpd-24:latest         
+	-p 8091:8080 → Maps port 8080 inside the container to port 8091 on the host.
+		* Access it via http://localhost:8091 (or http://your-server-ip:8091).
+	-v /root/webcontent:/var/www:Z →
+		* Mounts the /root/webcontent directory (on the host) to /var/www inside the container.
+		* :Z applies SELinux relabeling to allow the container access to the mounted directory (important for RHEL-based systems).
+
+9. docker rm myweb4  
+	removes container 
+
+10. Stateful App (mariadb):
+       docker run -d --name mydb -p 3306:3306 registry.access.redhat.com/rhscl/mariadb-101-rhel7 
+       how to run stateful app which would be exiting very soon 
+
+11. docker logs mydb
+	shows logs why the container is not running or such 
+	
+12. docker exec -it mydb2 bash
+	how to get into bash 
+	
+13.  Image Build:
+	[root@node3 ~]# vim Containerfile 
+	FROM docker.io/redhat/ubi8
+	MAINTAINER murali@gmail.com
+	LABEL description="A apache server for testing purpose"
+	RUN yum install -y httpd && \
+	    yum clean all 
+	RUN echo "Hello from Containerfile"> /var/www/html/index.html
+	EXPOSE 80
+	CMD ["httpd", "-D", "FOREGROUND"]
+	docker build -t myownimg:1.0 .
+	=================================================================================================================
+	Few things to consider the file must be name Conatinerfile or Dockerfile with uppercase C or D
+	-t tags it with the image name and version - her myownimg:1.0
+	also there is a . at the end which specifies it would be picking up the Container file from the current directory . 
+	FROM docker.io/redhat/ubi8
+	This line tells Docker to start from the Red Hat Universal Base Image (UBI 8), which is a minimal base image for building applications.
+	MAINTAINER murali@gmail.com
+	This is the maintainer label, specifying who is responsible for the image. While this is still supported, it's recommended to use LABEL instead (since MAINTAINER is deprecated):
+	Dockerfile
+	CopyEdit
+	LABEL maintainer="murali@gmail.com"
+	LABEL description="A apache server for testing purpose"
+	Adds a description to the image, which is useful for identifying the image when listed or described.
+	RUN yum install -y httpd && yum clean all
+	This installs Apache HTTP server (httpd) and then cleans up the yum cache to reduce the image size.
+	RUN echo "Hello from Containerfile" > /var/www/html/index.html
+	Creates a simple HTML page (index.html) with the text "Hello from Containerfile" inside the web server’s default directory /var/www/html.
+	EXPOSE 80
+	This informs Docker that the container will use port 80, the default HTTP port. This is not a port mapping (use -p when running the container for actual port mapping).
+	CMD ["httpd", "-D", "FOREGROUND"]
+	This sets the default command to run when the container starts. It runs Apache HTTPD in the foreground (important for Docker containers, as they stop when the main process exits).
+	=================================================================================================================
+	
+14. docker images 
+	Lists images 
+	
+15. docker push localhost/myownimg
+	pushes image to local registry, to fetch it we use docker pull 
+	
+16. docker run -d --name myowncont -p 8090:80 localhost/myownimg:1.0
+	docker run -d → Runs the container in detached mode (background).
+	--name myowncont → Names the container myowncont.
+	localhost/myownimg:1.0 → Specifies the image name and tag to use for the container, in this case, the image tagged as myownimg:1.0 from your local registry (localhost).
+	-p exposes it to the port 8090
+	
+====================================================================================================================================================================
+	Kubernetics
+1. kubectl get nodes 
+	shows nodes present
+	
+2.kubectl get pods -A
+	shows all the pods .. both running and not running 
+	
+3. [root@master ~]# vim kube-flannel.yml                                     -------> find the "Network" parameter in this file
+      "Network": "192.168.0.0/24",       ====> change here for our requried pod network 
+      "Backend": { 
+        "Type": "vxlan" 
+      } 
+    } 
+	[root@master ~]# kubectl create -f kube-flannel.yml 
+	kubectl create -f kube-flannel.yml
+Flannel is a CNI (Container Network Interface) plugin for Kubernetes that provides a simple and effective way to implement networking across pods in the cluster. It sets up the network overlay that allows pods running on different nodes in the cluster to communicate with each other.
+
+Kubernetes key properties:
+	* apiVersion: v1
+	* kind: object (pod, deployment, replicaset, service)
+	* metadata: data for the above object
+	* spec: like config for the object
+
+4. kubectl run mypod --image=nginx --dry-run=client -o yaml > mypod.yml 
+is used to generate a YAML manifest for a Kubernetes Pod without actually creating the pod in the cluster. Here’s a breakdown of the command:
+
+5. vim mypod.yml ====================> Creation of pod
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: mypod
+  name: myfirstpod
+spec:
+  containers:
+  - image: nginx
+    name: mypodcont
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}
+5. kubectl create -f mypod.yml 
+	creating new pod 
+
+6. kubectl get pod -o wide
+    gives you more description of the pods running . 
+    
+7. vim replicaset.yml  ===================> Creation of replicaset 
+apiVersion: apps/v1
+kind: ReplicaSet 
+metadata:
+  creationTimestamp: null
+  labels:
+    app: myrs
+  name: myrs
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: myrs
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: myrs
+    spec:
+      containers:
+      - image: nginx
+        name: nginx
+        resources: {}
+status: {}
+ 7. kubectl create -f replicaset.yml 
+	 creating replicaset with 2 replicas. 
+
+8. kubectl get replicaset
+	shows the replicas. 
+	
+9.  kubectl delete pod (pod name)
+deletes pod
+
+10. kubectl scale --replicas=4 rs (replicaset name) 
+	replicas can be increased or decreased with the no 
+	
+11. Online-Modify:
+    [root@master ~]# kubectl edit rs myrs -o yaml
+     -- change the replicas here------
+ OFFLine Modify:
+	[root@master ~]# vim replicaset.yml 
+	-----change replicas to 3-----------
+ kubectl apply -f replicaset.yml
+	 applies changes to the offline environment 
+	
+12. kubectl get ns  =========================> Namespace 
+	gives you namespace details 
+	
+13. kubectl get pod -n kube-system
+      Without switching, getting the other resources using -n option:
+
+14. kubectl config set-context --current --namespace=default
+     Switching to different namespace
+
+15. kubectl config get-contexts
+       To understand which namespace you are in:
+
+16. kubectl create deploy mydeploy --image=nginx --dry-run=client -o yaml >mydeploy.yml========================> DEPLOYMENT
+#vim mydeploy.yml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: mydeploy
+  name: mydeploy
+spec:
+  replicas: 8
+  selector:
+    matchLabels:
+      app: mydeploy
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: mydeploy
+    spec:
+      containers:
+      - image: nginx
+        name: nginx
+        resources: {}
+status: {}
+---save----
+16. kubectl create -f mydeploy.yml
+
+17.kubectl edit deploy mydeploy -o yaml (make changes to strategy)
+	 strategy:==========================================> ROLLING UPDATE: % of pods would be updated at a time
+	    rollingUpdate:
+	      maxSurge: 25%
+	      maxUnavailable: 25%
+	    type: RollingUpdate
+	strategy:===========================================>RECREATE : whole thing is updated at a single time
+	    type: Recreate
+	
+18.   spec:=============================================> NODE SELECTOR & NODE LABELING IN THE DEPLOYMENT FILE
+      containers:
+      - image: nginx
+        name: apache
+        imagePullPolicy: Never
+        resources: {}
+      nodeSelector: 
+        env: prod
+    kubectl label node node1 env=prod   
+        Selection bases on node lable 
+    kubectl describe node node1 | grep -A8 Label  
+        how to check if the node lable exists or not 
+    kubectl label node node1 env- 
+	    removing lable
+	    spec: ==================================================> SPECIFYING NODE PREFRENCE
+	      containers:
+	      - image: nginx
+	        name: apache
+	        imagePullPolicy: Never
+	        resources: {}
+	      nodeName: node1
+	
+19. Tainting a node 
+	EffectDescription
+	NoSchedulePrevents scheduling Pods on the node unless they have a matching toleration.
+	PreferNoScheduleTries to avoid scheduling Pods on the node but does not enforce it strictly.
+	NoExecuteEvicts existing Pods from the node if they do not have a matching toleration.
+	
+	kubectl taint node node1 crit=five:NoSchedule
+	kubectl taint node node2 crit=four:NoExecute
+	kubectl taint node node1 crit=five:PreferNoSchedule
+	kubectl describe node node1 | grep Taint
+	kubectl taint node node1 crit-
+	
+	Apply the tolerance 
+	tolerations:
+	      - effect: NoSchedule
+	        key: env
+	        operator: Equal
+	        value: prod
+	
+	Purpose of Taint & Toleration
+		* Dedicated Nodes: Prevent general workloads from running on special-purpose nodes (e.g., GPU nodes, high-memory nodes).
+		* Node Maintenance: Temporarily evict workloads from a node using the NoExecute effect.
+		* Security & Isolation: Ensure that only specific Pods (e.g., production workloads) run on certain nodes.
+
+20. NETWORKING
+A NodePort is a Service type in Kubernetes that exposes a Pod to external traffic by opening a specific port on all nodes in the cluster.
+How It Works
+	* Kubernetes assigns a port (default range: 30000-32767) on every node.
+	* Traffic sent to NodeIP:NodePort is forwarded to the corresponding Pod(s).
+	* Works without an external load balancer.
+kubectl create deployment mynginx --image=nginx
+	deploying image 
+kubectl expose deploy mynginx --port=80  
+	expose deployment on port 80
+Create Service yaml
+====================================================================================
+apiVersion: v1
+kind: Service
+metadata:
+  name: mynginx-service
+spec:
+  type: NodePort
+  selector:
+    app: mynginx
+  ports:
+    - protocol: TCP
+      port: 80          # Service port inside the cluster
+      targetPort: 80    # The container's port
+      nodePort: 31234   # Manually assigned NodePort (between 30000-32767)
+====================================================================================
+kubectl apply -f mynginx-service.yaml
+	apply service deployment 
+kubectl get svc mynginx-service
+      verify service IP and port details (IP is the ip of the node on which the pod is running)
+kubectl get endpoints
+      verify service IP
+
+21. DAEMONSET
+vim daemonsetUP.yml
+apiVersion: apps/v1
+kind: DaemonSet
+metadata: 
+  name: mydset
+  labels:
+    app: dset-ds
+    type: mydset
+spec:
+  template:
+    metadata:
+      name: mydset-pod
+      labels:
+        app: dset-pod
+        type: mydset
+    spec:
+      containers:
+      - image: nginx
+        name: mydsetcont
+  selector:
+    matchLabels:
+      type: mydset
+kubectl create -f daemonsetUP.yml
+	creates daemonset 
+ kubectl get ds
+	 shows daemons running 
+kubectl get pod -o wide| grep mydset
+	gives node and details of daemons running on it 
+	
+Points to note : If a new node is added daemons would be introduced to the new node also without any permission being required
+
+21. LIMIT RESOURCES
+	spec:
+	      containers:
+	      - image: nginx
+	        name: nginx
+	        resources: 
+	          limits:
+	            cpu: 200m
+	            memory: 200Mi
+	          requests:
+	            cpu: 100m
+	            memory: 100Mi
+	This are the resources with which the pods would be running. Limit is the upper limit where as requests are the lower limit but they are not definitive. 
+	Node shall be in pending state if the resources are not met. 
+	
+22. ROLE/ROLE BINDING
+	vim role.yml
+	apiVersion: rbac.authorization.k8s.io/v1
+	kind: Role
+	metadata:
+	  name: myrole
+	rules:
+	- apiGroups: [""]
+	  resources: ["pods"]
+	  verbs: ["list","get","create","update","delete"]
+      kubectl create -f role.yml
+	       will create the role named ¨myrole¨ with the given functions as list get create update and delete
+	
+	vim rolebinding.yml
+	apiVersion: rbac.authorization.k8s.io/v1
+	kind: RoleBinding
+	metadata:
+	  name: myrole-binding
+	subjects:
+	- kind: User
+	  name: dev-user
+	  apiGroup: rbac.authorization.k8s.io
+	roleRef:
+	  kind: Role
+	  name: myrole
+	  apiGroup: rbac.authorization.k8s.io
+	kubectl create -f rolebinding.yml
+		The above mentioned role is now bound to the group of user named ¨dev-user¨
+		Users can now be placed under the group and they would be auto-assigned the role to the group 
+		
+23. kubectl cordon node2
+	guard rails the nodes from may be installing patch 
+24. kubectl drain node2 --ignore-daemonsets
+	drains nodes of all its resources 
+25. kubectl uncordon node2
+	 removes guard rails. 
+
+26. STORAGE
+	StorageClass:
+	 vim storageclass.yml
+	apiVersion: storage.k8s.io/v1 
+	kind: StorageClass 
+	metadata: 
+	  name: localdisk 
+	provisioner: kubernetes.io/no-provisioner
+	allowVolumeExpansion: true
+	kubectl create -f storageclass.yml 
+		Storage classs creation 
+	kubectl get sc
+	Note: this StorageClass is a global object
+	
+	PersistentVolume:
+	vim host-pv.yml 
+	kind: PersistentVolume 
+	apiVersion: v1 
+	metadata: 
+	   name: host-pv 
+	spec: 
+	   storageClassName: localdisk
+	   persistentVolumeReclaimPolicy: Recycle 
+	   capacity: 
+	      storage: 1Gi 
+	   accessModes: 
+	      - ReadWriteOnce 
+	   hostPath: 
+	      path: /var/output          ---------------------> host mountpoint 
+	 kubectl create -f host-pv.yml
+		Persistent Volume creation 
+	 kubectl get pv
+	Note:  PV is also a global object - which we can able to access from any namespace (project)
+	
+	PersistentVolumeClaim(PVC):
+	vim host-pvc.yml
+	apiVersion: v1 
+	kind: PersistentVolumeClaim 
+	metadata: 
+	   name: host-pvc 
+	spec: 
+	   storageClassName: localdisk 
+	   accessModes: 
+	      - ReadWriteOnce 
+	   resources: 
+	      requests: 
+	         storage: 500Mi
+	kubectl create -f host-pvc.yml
+		Persistent Volume claim
+	kubectl get pvc
+	Note:  PVC is a namespace specific
+	
+27. APP/POD CREATION USING DEPLOYMENT AND CLAIMING PERSISTENT VOLUME 
+	vim deployment-hostpv.yml 
+	apiVersion: apps/v1
+	kind: Deployment
+	metadata: 
+	  name: myapps-dep
+	  labels:
+	    app: myapp
+	    type: front-end
+	spec:
+	  template:
+	    metadata:
+	      name: myapp-dep-pod
+	      labels:
+	        app: myapp-dep
+	        type: front-end
+	    spec:
+	      containers:
+	      - image: busybox
+	        name: busycont
+	        command: ['sh', '-c', 'while true; do echo Success! >> /output/success.txt; sleep 5; done'] 
+	        volumeMounts:
+	        - name: pv-storage
+	          mountPath: /output  
+	      volumes:
+	      - name: pv-storage
+	        persistentVolumeClaim:
+	          claimName: host-pvc
+	  replicas: 1
+	  selector:
+	    matchLabels:
+	      type: front-end
+	 kubectl create -f deployment-hostpv.yml 
+		Deployment creation 
+	Note: Pod is always a namespace specific
+	kubectl get pod storage-dep-68b655547b-5m4d9 -o yaml | less
+		get pod description and details 
+	kubectl exec -it storage-dep-68b655547b-5m4d9 -- sh
+		gives shell bash in the storage pod
+	
+What is Helm in Kubernetes? 🚀
+Helm is a package manager for Kubernetes that simplifies the deployment, management, and versioning of applications in a cluster.
+How Helm Works
+Helm uses Charts, which are pre-configured Kubernetes resource templates.
+Basic Components:
+	* Chart – A package containing YAML templates and default values.
+	* Release – A deployed instance of a Chart in a Kubernetes cluster.
+	* Repository – A collection of Helm Charts stored remotely or locally.
+
+Difference between Prometheus & Grafana 📊
+	* PurposeMonitoring & Alerting (collects and stores time-series data)Visualization & Dashboards (displays data with graphs and charts)
+	* Data StorageHas its own time-series database (TSDB)Does NOT store data (fetches from Prometheus, MySQL, Loki, etc.)
+	* Data CollectionPull-based system (scrapes metrics from targets)Pulls data from multiple sources (Prometheus, MySQL, InfluxDB, Loki, etc.)
+	* Query LanguageUses PromQL for querying metricsUses SQL, PromQL, LokiQL, and others
+
